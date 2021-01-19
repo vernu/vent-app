@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "828599565161",
+    "project_id": "lettuce-vent",
+    "storage_bucket": "lettuce-vent.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:828599565161:android:7ec2ebd4c8a84f17b65bf8",
+        "android_client_info": {
+          "package_name": "com.vernu.vent"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "828599565161-4ejt8chdht404ksh2pi3ngm8gls8cq1g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vernu.vent",
+            "certificate_hash": "e97896695cf1e3c83e9f0dcb8ca9145de724772e"
+          }
+        },
+        {
+          "client_id": "828599565161-32bhr6higgtbqgsc9ur0qbus7ddvt6na.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMlia113npjYRH_5b4ndK08bEVuQqDfWU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "828599565161-32bhr6higgtbqgsc9ur0qbus7ddvt6na.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "828599565161-mv5oves4e0rji0n5tp5i4399d2ktm9fr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.vernu.vent"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
