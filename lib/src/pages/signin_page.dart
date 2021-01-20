@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +14,10 @@ class _SigninPageState extends State<SiginPage> {
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final _signinFormKey = GlobalKey<FormState>();
   final _phoneVerificationFormKey = GlobalKey<FormState>();
-  String email, password;
+  String name, email, password, phoneNumber;
   bool _isSigningIn = false;
-  String phoneNumber;
+  bool isVerifyingPhone = false;
+  bool isSendingSmsCode = false;
   bool smsCodeSent = false;
   String smsCode;
   String phoneVerificationId;
@@ -165,13 +167,22 @@ class _SigninPageState extends State<SiginPage> {
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      await FirebaseAuth.instance.signInWithCredential(credential);
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      if (userCredential.additionalUserInfo.isNewUser) {
+        _storeUserData(
+            userCredential.user.displayName, userCredential.user.email, null);
+      }
     } catch (e) {
       print(e.toString());
     }
   }
 
   Future _verifyPhone(String phoneNumber, BuildContext context) async {
+    setState(() {
+      isVerifyingPhone = true;
+    });
+
     await _firebaseAuth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (phoneAuthCredential) =>
@@ -187,10 +198,17 @@ class _SigninPageState extends State<SiginPage> {
           _smsCodeEntryDialog();
         },
         codeAutoRetrievalTimeout: (verificationId) => {});
+    setState(() {
+      isVerifyingPhone = false;
+    });
   }
 
   void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) async {
-    await _firebaseAuth.signInWithCredential(phoneAuthCredential);
+    UserCredential userCredential =
+        await _firebaseAuth.signInWithCredential(phoneAuthCredential);
+    if (userCredential.additionalUserInfo.isNewUser) {
+      _storeUserData(null, null, phoneNumber);
+    }
   }
 
   void onVerificationFailed(FirebaseAuthException firebaseAuthException) {
@@ -205,13 +223,26 @@ class _SigninPageState extends State<SiginPage> {
             titlePadding: EdgeInsets.all(2),
             contentPadding: EdgeInsets.all(8),
             elevation: 8,
-            title: Text('Enter your phone number'),
+            title: Text('Enter your name and phone number'),
             children: [
               Form(
                   key: _phoneVerificationFormKey,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
+                      TextFormField(
+                        keyboardType: TextInputType.name,
+                        decoration:
+                            InputDecoration(labelText: 'Name', hintText: ''),
+                        validator: (val) {
+                          if (val.isEmpty) {
+                            return 'please enter a name';
+                          }
+
+                          name = val;
+                          return null;
+                        },
+                      ),
                       TextFormField(
                         keyboardType: TextInputType.phone,
                         initialValue: '+251',
@@ -225,22 +256,22 @@ class _SigninPageState extends State<SiginPage> {
                           if (val.length < 10) {
                             return 'phone number cant be less than 10 digits';
                           }
-                          setState(() {
-                            phoneNumber = val;
-                          });
+                          phoneNumber = val;
                           return null;
                         },
                       ),
                       Row(children: [
-                        RaisedButton(
-                            onPressed: () async {
-                              if (_phoneVerificationFormKey.currentState
-                                  .validate()) {
-                                _verifyPhone(phoneNumber, context);
-                                Navigator.pop(context);
-                              }
-                            },
-                            child: Text('Continue'))
+                        isVerifyingPhone
+                            ? CircularProgressIndicator()
+                            : RaisedButton(
+                                onPressed: () async {
+                                  if (_phoneVerificationFormKey.currentState
+                                      .validate()) {
+                                    await _verifyPhone(phoneNumber, context);
+                                    Navigator.pop(context);
+                                  }
+                                },
+                                child: Text('Continue'))
                       ]),
                     ],
                   )),
@@ -273,26 +304,53 @@ class _SigninPageState extends State<SiginPage> {
                     },
                   ),
                   Row(children: [
-                    RaisedButton(
-                        onPressed: () async {
-                          PhoneAuthCredential phoneAuthCredential =
-                              PhoneAuthProvider.credential(
-                                  verificationId: phoneVerificationId,
-                                  smsCode: smsCode);
-                          UserCredential userCredential = await _firebaseAuth
-                              .signInWithCredential(phoneAuthCredential);
-                          if (userCredential.additionalUserInfo.isNewUser) {
-                            //update name email,
-                            // userCredential.user.
-                          }
-                          Navigator.pop(context);
-                        },
-                        child: Text('Continue'))
+                    isSendingSmsCode
+                        ? CircularProgressIndicator()
+                        : RaisedButton(
+                            onPressed: () async {
+                              setState(() {
+                                isSendingSmsCode = true;
+                              });
+                              PhoneAuthCredential phoneAuthCredential =
+                                  PhoneAuthProvider.credential(
+                                      verificationId: phoneVerificationId,
+                                      smsCode: smsCode);
+                              UserCredential userCredential =
+                                  await _firebaseAuth.signInWithCredential(
+                                      phoneAuthCredential);
+                              if (userCredential.additionalUserInfo.isNewUser) {
+                                await userCredential.user.updateProfile(displayName: name);
+                                //update name email phoneNumber,
+                                await _storeUserData(name, null, phoneNumber);
+                              }
+                              setState(() {
+                                isSendingSmsCode = true;
+                              });
+                              Navigator.pop(context);
+                            },
+                            child: Text('Continue'))
                   ]),
                 ],
               )),
             ],
           );
         });
+  }
+
+  //store users data to user collection
+  _storeUserData(name, email, phoneNumber) async {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    DocumentReference docRef = firebaseFirestore
+        .collection('users')
+        .doc(_firebaseAuth.currentUser.uid);
+    DocumentSnapshot docSnapshot = await docRef.get();
+    if (!docSnapshot.exists) {
+      await docRef.set({
+        'name': name,
+        'email': email,
+        'phone': phoneNumber,
+        'createdAt': _firebaseAuth.currentUser.metadata.creationTime,
+      });
+    }
   }
 }

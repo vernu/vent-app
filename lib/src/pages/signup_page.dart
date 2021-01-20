@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -148,9 +149,21 @@ class _SignupPageState extends State<SignupPage> {
     } catch (e) {
       print(e);
     } finally {
+      _storeUserData();
       setState(() {
         _isRegistering = false;
       });
     }
+  }
+
+  //store users data to user collection
+  _storeUserData() async {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    CollectionReference users = firebaseFirestore.collection('users');
+    await users.doc(_firebaseAuth.currentUser.uid).set({
+      'name': name,
+      'email': email,
+      'createdAt': _firebaseAuth.currentUser.metadata.creationTime,
+    });
   }
 }
