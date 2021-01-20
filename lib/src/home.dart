@@ -1,14 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:vent/src/pages/home_page.dart';
+import 'package:vent/src/pages/my_account_page.dart';
 import 'package:vent/src/pages/signin_page.dart';
 
-class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
+class Home extends StatefulWidget {
+  Home({Key key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomeState createState() => _HomeState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomeState extends State<Home> {
   PageController _pageController;
   int _currentTabIndex = 0;
 
@@ -20,7 +23,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final _tabPages = <Widget>[Text('Home'), SiginPage()];
+    final _tabPages = <Widget>[HomePage(), FirebaseAuth.instance.currentUser != null ? MyAccountPage() : SiginPage(),];
     final _bottmonNavBarItems = <BottomNavigationBarItem>[
       const BottomNavigationBarItem(
           icon: Icon(Icons.home), title: Text('Home')),
@@ -29,6 +32,8 @@ class _HomePageState extends State<HomePage> {
     ];
     assert(_tabPages.length == _bottmonNavBarItems.length);
     final bottomNavBar = BottomNavigationBar(
+      showSelectedLabels: false,
+      showUnselectedLabels: false,
       items: _bottmonNavBarItems,
       currentIndex: _currentTabIndex,
       type: BottomNavigationBarType.fixed,
