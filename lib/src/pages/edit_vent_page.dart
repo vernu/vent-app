@@ -1,18 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:vent/src/models/vent.dart';
 
-class SubmitVentPage extends StatefulWidget {
-  _SubmitVentPageState createState() => _SubmitVentPageState();
+class EditVentPage extends StatefulWidget {
+  _EditVentPageState createState() => _EditVentPageState();
+  final Vent vent;
+  const EditVentPage(
+    this.vent, {
+    Key key,
+  }) : super(key: key);
 }
 
-class _SubmitVentPageState extends State<SubmitVentPage> {
+class _EditVentPageState extends State<EditVentPage> {
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   GlobalKey<FormState> _submitVentFormKey = GlobalKey<FormState>();
-  bool isSubmitting = false;
-
+  bool isUpdating = false;
   String title, vent;
 
   @override
@@ -22,7 +27,7 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text('Submit Vent'),
+        title: Text('Edit Vent'),
         actions: [],
       ),
       body: SafeArea(
@@ -34,6 +39,7 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     TextFormField(
+                      initialValue: widget.vent.title,
                       decoration:
                           InputDecoration(labelText: 'title', hintText: ''),
                       validator: (val) {
@@ -44,6 +50,7 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
                       },
                     ),
                     TextFormField(
+                      initialValue: widget.vent.vent,
                       keyboardType: TextInputType.multiline,
                       decoration:
                           InputDecoration(labelText: 'vent', hintText: ''),
@@ -58,16 +65,16 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
                       },
                     ),
                     Row(children: [
-                      isSubmitting
+                      isUpdating
                           ? CircularProgressIndicator()
                           : RaisedButton(
                               onPressed: () async {
                                 if (_submitVentFormKey.currentState
                                     .validate()) {
-                                  _submitVent(title, vent);
+                                  _updateVent(title, vent);
                                 }
                               },
-                              child: Text('Submit'))
+                              child: Text('Update'))
                     ]),
                   ],
                 ))
@@ -77,28 +84,19 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
     );
   }
 
-  _submitVent(title, vent) async {
+  _updateVent(title, vent) async {
     setState(() {
-      isSubmitting = true;
+      isUpdating = true;
     });
-    await _firebaseFirestore.collection('vents').add({
-      'userId': _firebaseAuth.currentUser.uid,
+    await _firebaseFirestore.collection('vents').doc(widget.vent.id).update({
       'title': title,
       'vent': vent,
-      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
     });
-    DocumentSnapshot userDocSnapshot = await _firebaseFirestore
-        .collection('users')
-        .doc(_firebaseAuth.currentUser.uid)
-        .get();
 
-    if (userDocSnapshot.exists) {
-      userDocSnapshot.reference.update({'numVents': FieldValue.increment(1)});
-    }
     setState(() {
-      isSubmitting = false;
+      isUpdating = false;
     });
-
     Navigator.pop(context);
   }
 }

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:vent/src/models/vent.dart';
+import 'package:vent/src/pages/edit_vent_page.dart';
 import 'package:vent/src/pages/submit_vent_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -57,6 +58,30 @@ class _HomePageState extends State<HomePage> {
                                 ],
                               ),
                             ),
+                            _firebaseAuth.currentUser == null
+                                ? Container()
+                                : vents[index].userId ==
+                                        _firebaseAuth.currentUser.uid
+                                    ? Column(
+                                        children: [
+                                          IconButton(
+                                              icon: Icon(Icons.edit),
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            EditVentPage(
+                                                                vents[index])));
+                                              }),
+                                          IconButton(
+                                              icon: Icon(Icons.delete),
+                                              onPressed: () {
+                                                _deleteVent(vents[index]);
+                                              }),
+                                        ],
+                                      )
+                                    : Container(),
                           ],
                         ),
                       ),
@@ -65,5 +90,16 @@ class _HomePageState extends State<HomePage> {
             })
       ],
     );
+  }
+
+  void _deleteVent(Vent vent) async {
+    await _firebaseFirestore.collection('vents').doc(vent.id).delete();
+    DocumentSnapshot userDocSnapshot =
+        await _firebaseFirestore.collection('users').doc(vent.userId).get();
+
+    if (userDocSnapshot.exists) {
+      await userDocSnapshot.reference
+          .update({'numVents': FieldValue.increment(-1)});
+    }
   }
 }
