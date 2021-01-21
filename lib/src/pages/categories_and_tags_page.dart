@@ -19,7 +19,10 @@ class _CategoriesAndTagsPageState extends State<CategoriesAndTagsPage> {
             style: TextStyle(fontSize: 22),
           ),
           FutureBuilder<QuerySnapshot>(
-              future: _firebaseFirestore.collection('categories').get(),
+              future: _firebaseFirestore
+                  .collection('categories')
+                  .orderBy('name')
+                  .get(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Center(child: CircularProgressIndicator());

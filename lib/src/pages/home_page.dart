@@ -28,7 +28,10 @@ class _HomePageState extends State<HomePage> {
                 child: Text('Vent'),
               ),
         FutureBuilder<QuerySnapshot>(
-            future: _firebaseFirestore.collection('vents').get(),
+            future: _firebaseFirestore
+                .collection('vents')
+                .orderBy('createdAt', descending: true)
+                .get(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return Center(child: CircularProgressIndicator());
