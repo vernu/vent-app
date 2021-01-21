@@ -31,54 +31,59 @@ class _EditVentPageState extends State<EditVentPage> {
         actions: [],
       ),
       body: SafeArea(
-        child: ListView(
-          children: [
-            Form(
-                key: _submitVentFormKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    TextFormField(
-                      initialValue: widget.vent.title,
-                      decoration:
-                          InputDecoration(labelText: 'title', hintText: ''),
-                      validator: (val) {
-                        setState(() {
-                          title = val;
-                        });
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      initialValue: widget.vent.vent,
-                      keyboardType: TextInputType.multiline,
-                      decoration:
-                          InputDecoration(labelText: 'vent', hintText: ''),
-                      validator: (val) {
-                        if (val.isEmpty) {
-                          return 'vent field is required';
-                        }
-                        setState(() {
-                          vent = val;
-                        });
-                        return null;
-                      },
-                    ),
-                    Row(children: [
-                      isUpdating
-                          ? CircularProgressIndicator()
-                          : RaisedButton(
-                              onPressed: () async {
-                                if (_submitVentFormKey.currentState
-                                    .validate()) {
-                                  _updateVent(title, vent);
-                                }
-                              },
-                              child: Text('Update'))
-                    ]),
-                  ],
-                ))
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListView(
+            children: [
+              Form(
+                  key: _submitVentFormKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      TextFormField(
+                        initialValue: widget.vent.title,
+                        decoration:
+                            InputDecoration(labelText: 'title', hintText: ''),
+                        validator: (val) {
+                          setState(() {
+                            title = val;
+                          });
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        minLines: 5,
+                        maxLines: 5,
+                        initialValue: widget.vent.vent,
+                        keyboardType: TextInputType.multiline,
+                        decoration:
+                            InputDecoration(labelText: 'vent', hintText: ''),
+                        validator: (val) {
+                          if (val.isEmpty) {
+                            return 'vent field is required';
+                          }
+                          setState(() {
+                            vent = val;
+                          });
+                          return null;
+                        },
+                      ),
+                      Row(children: [
+                        isUpdating
+                            ? CircularProgressIndicator()
+                            : RaisedButton(
+                                onPressed: () async {
+                                  if (_submitVentFormKey.currentState
+                                      .validate()) {
+                                    _updateVent(title, vent);
+                                  }
+                                },
+                                child: Text('Update'))
+                      ]),
+                    ],
+                  ))
+            ],
+          ),
         ),
       ),
     );
@@ -91,6 +96,7 @@ class _EditVentPageState extends State<EditVentPage> {
     await _firebaseFirestore.collection('vents').doc(widget.vent.id).update({
       'title': title,
       'vent': vent,
+      'tags': [],
       'updatedAt': FieldValue.serverTimestamp(),
     });
 
