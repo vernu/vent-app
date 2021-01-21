@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:vent/src/pages/categories_and_tags_page.dart';
 import 'package:vent/src/pages/home_page.dart';
 import 'package:vent/src/pages/my_account_page.dart';
 import 'package:vent/src/pages/signin_page.dart';
@@ -23,10 +24,16 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final _tabPages = <Widget>[HomePage(), FirebaseAuth.instance.currentUser != null ? MyAccountPage() : SiginPage(),];
+    final _tabPages = <Widget>[
+      HomePage(),
+      CategoriesAndTagsPage(),
+      FirebaseAuth.instance.currentUser != null ? MyAccountPage() : SiginPage(),
+    ];
     final _bottmonNavBarItems = <BottomNavigationBarItem>[
       const BottomNavigationBarItem(
           icon: Icon(Icons.home), title: Text('Home')),
+      const BottomNavigationBarItem(
+          icon: Icon(Icons.category), title: Text('Categories and Tags')),
       const BottomNavigationBarItem(
           icon: Icon(Icons.person), title: Text('Account')),
     ];
@@ -61,5 +68,4 @@ class _HomeState extends State<Home> {
       bottomNavigationBar: bottomNavBar,
     );
   }
-
 }

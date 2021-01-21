@@ -92,14 +92,20 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _deleteVent(Vent vent) async {
-    await _firebaseFirestore.collection('vents').doc(vent.id).delete();
-    DocumentSnapshot userDocSnapshot =
-        await _firebaseFirestore.collection('users').doc(vent.userId).get();
+  Future<bool> _deleteVent(Vent vent) async {
+    try {
+      _firebaseFirestore.runTransaction((transaction) async {
+        transaction.delete(_firebaseFirestore.collection('vents').doc(vent.id));
+        DocumentSnapshot userDocSnapshot =
+            await _firebaseFirestore.collection('users').doc(vent.userId).get();
 
-    if (userDocSnapshot.exists) {
-      await userDocSnapshot.reference
-          .update({'numVents': FieldValue.increment(-1)});
-    }
+        transaction.update(
+            userDocSnapshot.reference, {'numVents': FieldValue.increment(-1)});
+      });
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    } finally {}
   }
 }
