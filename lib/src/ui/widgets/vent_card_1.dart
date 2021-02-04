@@ -38,14 +38,12 @@ class _VentCard1State extends State<VentCard1> {
                     ? Column(
                         children: [
                           IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            EditVentPage(widget.vent)));
-                              }),
+                            icon: Icon(Icons.edit),
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/edit_vent',
+                                  arguments: {'vent': widget.vent});
+                            },
+                          ),
                           deleting
                               ? CupertinoActivityIndicator()
                               : IconButton(

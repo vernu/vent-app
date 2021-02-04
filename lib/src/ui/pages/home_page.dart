@@ -21,10 +21,7 @@ class _HomePageState extends State<HomePage> {
               if (state is AuthenticationSuccess)
                 return RaisedButton(
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SubmitVentPage()));
+                    Navigator.pushNamed(context, '/submit_vent');
                   },
                   child: Text('Submit Vent'),
                 );

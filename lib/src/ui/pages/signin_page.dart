@@ -101,10 +101,7 @@ class _SigninPageState extends State<SiginPage> {
                         fontWeight: FontWeight.bold),
                     recognizer: new TapGestureRecognizer()
                       ..onTap = () {
-                        Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (context) => SignupPage()));
+                        Navigator.pushNamed(context, '/sign_up');
                       })
               ]),
         ),

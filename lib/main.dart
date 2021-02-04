@@ -2,7 +2,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vent/src/blocs/auth/auth_bloc.dart';
+import 'package:vent/src/router/app_router.dart';
 import 'package:vent/src/ui/home.dart';
+import 'package:vent/src/ui/pages/edit_vent_page.dart';
+import 'package:vent/src/ui/pages/signup_page.dart';
+import 'package:vent/src/ui/pages/submit_vent_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +33,8 @@ class MyApp extends StatelessWidget {
                   primarySwatch: Colors.red,
                   visualDensity: VisualDensity.adaptivePlatformDensity,
                 ),
-                home: Home(),
+                onGenerateRoute: (routeSettings) =>
+                    AppRouter.onGenerateRoute(routeSettings),
               ),
             );
           }
