@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:vent/src/models/vent.dart';
 import 'package:vent/src/repository/vent_repository.dart';
-import 'package:vent/src/ui/pages/edit_vent_page.dart';
 
 class VentCard1 extends StatefulWidget {
   _VentCard1State createState() => _VentCard1State();

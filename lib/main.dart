@@ -2,11 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vent/src/blocs/auth/auth_bloc.dart';
+import 'package:vent/src/blocs/theme/theme_bloc.dart';
 import 'package:vent/src/router/app_router.dart';
-import 'package:vent/src/ui/home.dart';
-import 'package:vent/src/ui/pages/edit_vent_page.dart';
-import 'package:vent/src/ui/pages/signup_page.dart';
-import 'package:vent/src/ui/pages/submit_vent_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,16 +22,28 @@ class MyApp extends StatelessWidget {
             print(snapshot.error.toString());
           }
           if (snapshot.connectionState == ConnectionState.done) {
-            return BlocProvider(
-              create: (context) => AuthBloc(),
-              child: MaterialApp(
-                title: 'Vent',
-                theme: ThemeData(
-                  primarySwatch: Colors.red,
-                  visualDensity: VisualDensity.adaptivePlatformDensity,
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (_) => ThemeBloc()..add(ThemeInitial()),
                 ),
-                onGenerateRoute: (routeSettings) =>
-                    AppRouter.onGenerateRoute(routeSettings),
+                BlocProvider(
+                  create: (_) => AuthBloc(),
+                ),
+              ],
+              child: BlocBuilder<ThemeBloc, ThemeState>(
+                builder: (context, state) {
+                  return MaterialApp(
+                    title: 'Vent',
+                    // theme: ThemeData(
+                    //   primarySwatch: Colors.red,
+                    //   visualDensity: VisualDensity.adaptivePlatformDensity,
+                    // ),
+                    theme: state.themeData,
+                    onGenerateRoute: (routeSettings) =>
+                        AppRouter.onGenerateRoute(routeSettings),
+                  );
+                },
               ),
             );
           }

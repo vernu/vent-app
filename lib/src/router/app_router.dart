@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vent/src/ui/home.dart';
 import 'package:vent/src/ui/pages/edit_vent_page.dart';
+import 'package:vent/src/ui/pages/settings_page.dart';
 import 'package:vent/src/ui/pages/signup_page.dart';
 import 'package:vent/src/ui/pages/submit_vent_page.dart';
 
@@ -10,6 +11,9 @@ class AppRouter {
     switch (routeSettings.name) {
       case '/':
         return MaterialPageRoute(builder: (_) => Home());
+        break;
+      case '/settings':
+        return MaterialPageRoute(builder: (_) => SettingsPage());
         break;
       case '/sign_up':
         return MaterialPageRoute(builder: (_) => SignupPage());

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vent/src/blocs/auth/auth_bloc.dart';
 import 'package:vent/src/blocs/vents/vents_bloc.dart';
-import 'package:vent/src/ui/pages/submit_vent_page.dart';
 import 'package:vent/src/ui/widgets/vent_card_1.dart';
 
 class HomePage extends StatefulWidget {

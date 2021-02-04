@@ -2,7 +2,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vent/src/blocs/auth/auth_bloc.dart';
-import 'package:vent/src/ui/pages/signup_page.dart';
 
 class SiginPage extends StatefulWidget {
   _SigninPageState createState() => _SigninPageState();
