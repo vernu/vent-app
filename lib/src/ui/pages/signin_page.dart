@@ -1,26 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:vent/src/pages/signup_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vent/src/blocs/auth/auth_bloc.dart';
+import 'package:vent/src/ui/pages/signup_page.dart';
 
 class SiginPage extends StatefulWidget {
   _SigninPageState createState() => _SigninPageState();
 }
 
 class _SigninPageState extends State<SiginPage> {
-  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final _signinFormKey = GlobalKey<FormState>();
   final _phoneVerificationFormKey = GlobalKey<FormState>();
   String name, email, password, phoneNumber;
-  bool _isSigningIn = false;
-  bool isVerifyingPhone = false;
-  bool isSendingSmsCode = false;
-  bool smsCodeSent = false;
   String smsCode;
-  String phoneVerificationId;
 
   @override
   void initState() {
@@ -71,9 +63,13 @@ class _SigninPageState extends State<SiginPage> {
                 return null;
               },
             ),
-            _isSigningIn
-                ? CircularProgressIndicator()
-                : RaisedButton(
+            BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                print(state.toString());
+                if (state is AuthenticationInProgress)
+                  return CircularProgressIndicator();
+
+                return RaisedButton(
                     color: Theme.of(context).primaryColor,
                     elevation: 4,
                     child: Text(
@@ -82,9 +78,13 @@ class _SigninPageState extends State<SiginPage> {
                     ),
                     onPressed: () {
                       if (_signinFormKey.currentState.validate()) {
-                        _signin();
+                        context.read<AuthBloc>().add(
+                            SignInWithPasswordRequested(
+                                email: email, password: password));
                       }
-                    }),
+                    });
+              },
+            ),
           ]),
         ),
         RichText(
@@ -110,16 +110,17 @@ class _SigninPageState extends State<SiginPage> {
         ),
 
         RaisedButton(
-          onPressed: () => {_firebaseAuth.signInAnonymously()},
+          onPressed: () =>
+              context.read<AuthBloc>().add(SignInAnonymouslyRequested()),
           child: Text('Sigin with Anonymously'),
         ),
         RaisedButton(
-          onPressed: () => {_phoneSigninDialog()},
+          onPressed: () => {showPhoneSigninDialog()},
           child: Text('Sigin with phone'),
         ),
         RaisedButton(
           onPressed: () {
-            _signinWithGoogle();
+            context.read<AuthBloc>().add(SignInWithGoogleRequested());
           },
           child: Text('Sigin with Google'),
         ),
@@ -132,90 +133,19 @@ class _SigninPageState extends State<SiginPage> {
         //   },
         //   child: Text('Sigin with Facebook'),
         // ),
+        BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthenticatingPhoneInProgress) {
+              smsCodeEntryDialog(state.verificationId);
+            }
+          },
+          child: Container(),
+        )
       ],
     );
   }
 
-  void _signin() async {
-    setState(() {
-      _isSigningIn = true;
-    });
-
-    try {
-      await _firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: password);
-    } on FirebaseAuthException catch (e) {
-      print(e.code);
-      if (e.code == 'user-not-found') {
-      } else if (e.code == 'invalid-email') {
-      } else if (e.code == 'wrong-password') {}
-    } catch (e) {
-      print(e);
-    } finally {
-      setState(() {
-        _isSigningIn = false;
-      });
-    }
-  }
-
-  void _signinWithGoogle() async {
-    try {
-      final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-      final GoogleAuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
-      if (userCredential.additionalUserInfo.isNewUser) {
-        _storeUserData(
-            userCredential.user.displayName, userCredential.user.email, null);
-      }
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
-  Future _verifyPhone(String phoneNumber, BuildContext context) async {
-    setState(() {
-      isVerifyingPhone = true;
-    });
-
-    await _firebaseAuth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        verificationCompleted: (phoneAuthCredential) =>
-            {onVerificationCompleted(phoneAuthCredential)},
-        verificationFailed: (e) => {onVerificationFailed(e)},
-        codeSent: (verificationId, resendToken) {
-          // print('code sent');
-          setState(() {
-            smsCodeSent = true;
-            phoneVerificationId = verificationId;
-          });
-
-          _smsCodeEntryDialog();
-        },
-        codeAutoRetrievalTimeout: (verificationId) => {});
-    setState(() {
-      isVerifyingPhone = false;
-    });
-  }
-
-  void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) async {
-    UserCredential userCredential =
-        await _firebaseAuth.signInWithCredential(phoneAuthCredential);
-    if (userCredential.additionalUserInfo.isNewUser) {
-      _storeUserData(null, null, phoneNumber);
-    }
-  }
-
-  void onVerificationFailed(FirebaseAuthException firebaseAuthException) {
-    print(firebaseAuthException.message);
-  }
-
-  void _phoneSigninDialog() {
+  void showPhoneSigninDialog() {
     showDialog(
         context: context,
         builder: (context) {
@@ -261,17 +191,25 @@ class _SigninPageState extends State<SiginPage> {
                         },
                       ),
                       Row(children: [
-                        isVerifyingPhone
-                            ? CircularProgressIndicator()
-                            : RaisedButton(
+                        BlocBuilder<AuthBloc, AuthState>(
+                          builder: (context, state) {
+                            if (state is AuthenticationInProgress) {
+                              return CircularProgressIndicator();
+                            }
+                            return RaisedButton(
                                 onPressed: () async {
                                   if (_phoneVerificationFormKey.currentState
                                       .validate()) {
-                                    await _verifyPhone(phoneNumber, context);
+                                    context.read<AuthBloc>().add(
+                                        SignInWithPhoneRequested(
+                                            phoneNumber: phoneNumber));
+
                                     Navigator.pop(context);
                                   }
                                 },
-                                child: Text('Continue'))
+                                child: Text('Continue'));
+                          },
+                        )
                       ]),
                     ],
                   )),
@@ -280,7 +218,7 @@ class _SigninPageState extends State<SiginPage> {
         });
   }
 
-  void _smsCodeEntryDialog() {
+  void smsCodeEntryDialog(verificationId) {
     showDialog(
         context: context,
         builder: (context) {
@@ -304,53 +242,26 @@ class _SigninPageState extends State<SiginPage> {
                     },
                   ),
                   Row(children: [
-                    isSendingSmsCode
-                        ? CircularProgressIndicator()
-                        : RaisedButton(
-                            onPressed: () async {
-                              setState(() {
-                                isSendingSmsCode = true;
-                              });
-                              PhoneAuthCredential phoneAuthCredential =
-                                  PhoneAuthProvider.credential(
-                                      verificationId: phoneVerificationId,
-                                      smsCode: smsCode);
-                              UserCredential userCredential =
-                                  await _firebaseAuth.signInWithCredential(
-                                      phoneAuthCredential);
-                              if (userCredential.additionalUserInfo.isNewUser) {
-                                await userCredential.user.updateProfile(displayName: name);
-                                //update name email phoneNumber,
-                                await _storeUserData(name, null, phoneNumber);
-                              }
-                              setState(() {
-                                isSendingSmsCode = true;
-                              });
-                              Navigator.pop(context);
+                    BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, state) {
+                        // if(state is WaitingForPhoneVerificationCode){
+                        //   return CircularProgressIndicator();
+                        // }
+                        return RaisedButton(
+                            onPressed: () {
+                              context.read<AuthBloc>().add(
+                                  PhoneVerificationCodeSubmitted(
+                                      verificationId: verificationId,
+                                      smsCode: smsCode));
                             },
-                            child: Text('Continue'))
+                            child: Text('Continue'));
+                      },
+                    )
                   ]),
                 ],
               )),
             ],
           );
         });
-  }
-
-  //store users data to user collection
-  _storeUserData(name, email, phoneNumber) async {
-    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-    DocumentReference docRef = firebaseFirestore
-        .collection('users')
-        .doc(_firebaseAuth.currentUser.uid);
-    DocumentSnapshot docSnapshot = await docRef.get();
-    if (!docSnapshot.exists) {
-      await docRef.set({
-        'name': name,
-        'email': email,
-        'phone': phoneNumber,
-        'createdAt': _firebaseAuth.currentUser.metadata.creationTime,
-      });
-    }
   }
 }

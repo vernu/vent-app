@@ -1,13 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:vent/src/models/category.dart';
+import 'package:vent/src/repository/category_repository.dart';
 
 class CategoriesAndTagsPage extends StatefulWidget {
   _CategoriesAndTagsPageState createState() => _CategoriesAndTagsPageState();
 }
 
 class _CategoriesAndTagsPageState extends State<CategoriesAndTagsPage> {
-  FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   @override
   Widget build(context) {
     return Padding(
@@ -18,34 +17,15 @@ class _CategoriesAndTagsPageState extends State<CategoriesAndTagsPage> {
             'Categories',
             style: TextStyle(fontSize: 22),
           ),
-          FutureBuilder<QuerySnapshot>(
-              future: _firebaseFirestore
-                  .collection('categories')
-                  .orderBy('name')
-                  .get(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                List<Category> categories = snapshot.data.docs
-                    .map((i) => Category.fromMap(i.id, i.data()))
-                    .toList();
-                return GridView.count(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    crossAxisCount: 3,
-                    childAspectRatio: 2,
-                    children: categories
-                        .map((category) => Card(
-                            child: Center(child: Text('${category.name} '))))
-                        .toList());
-              }),
+          FutureBuilder<List<Category>>(
+              future: CategoryRepository().getCategories(),
+              builder: _categoriesBuilder),
           Text(
             'Tags',
             style: TextStyle(fontSize: 22),
           ),
           Wrap(
-            children: List.generate(20, (i) {
+            children: List.generate(15, (i) {
               return i + 1;
             })
                 .toList()
@@ -66,5 +46,21 @@ class _CategoriesAndTagsPageState extends State<CategoriesAndTagsPage> {
         ],
       ),
     );
+  }
+
+  Widget _categoriesBuilder(context, snapshot) {
+    if (!snapshot.hasData) {
+      return Center(child: CircularProgressIndicator());
+    }
+    List<Category> categories = snapshot.data;
+    return GridView.count(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        crossAxisCount: 3,
+        childAspectRatio: 2,
+        children: categories
+            .map((category) =>
+                Card(child: Center(child: Text('${category.name} '))))
+            .toList());
   }
 }

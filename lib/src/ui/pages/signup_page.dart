@@ -1,17 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vent/src/blocs/auth/auth_bloc.dart';
 
 class SignupPage extends StatefulWidget {
   _SignupPageState createState() => _SignupPageState();
 }
 
 class _SignupPageState extends State<SignupPage> {
-  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GlobalKey<FormState> _signupFormKey = GlobalKey<FormState>();
   String name, email, password;
-  bool _isRegistering = false;
 
   @override
   void initState() {
@@ -109,9 +106,12 @@ class _SignupPageState extends State<SignupPage> {
                       return null;
                     },
                   ),
-                  _isRegistering
-                      ? CircularProgressIndicator()
-                      : RaisedButton(
+                  BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      if(state is SignUpInProgress){
+                        return Center(child: CircularProgressIndicator(),);
+                      }
+                      return RaisedButton(
                           color: Theme.of(context).primaryColor,
                           elevation: 4,
                           child: Text(
@@ -120,9 +120,15 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                           onPressed: () {
                             if (_signupFormKey.currentState.validate()) {
-                              _register();
+                              context.read<AuthBloc>().add(
+                                  SignUpWithPasswordRequested(
+                                      email: email,
+                                      password: password,
+                                      name: name));
                             }
-                          }),
+                          });
+                    },
+                  ),
                 ]),
               ),
             )
@@ -130,40 +136,5 @@ class _SignupPageState extends State<SignupPage> {
         ),
       ),
     );
-  }
-
-  void _register() async {
-    setState(() {
-      _isRegistering = true;
-    });
-
-    try {
-      UserCredential userCredential = await _firebaseAuth
-          .createUserWithEmailAndPassword(email: email, password: password);
-      userCredential.user.sendEmailVerification();
-      await userCredential.user.updateProfile(displayName: name);
-    } on FirebaseAuthException catch (e) {
-      print(e.code);
-      if (e.code == 'weak-password') {
-      } else if (e.code == 'email-already-in-use') {}
-    } catch (e) {
-      print(e);
-    } finally {
-      _storeUserData();
-      setState(() {
-        _isRegistering = false;
-      });
-    }
-  }
-
-  //store users data to user collection
-  _storeUserData() async {
-    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-    CollectionReference users = firebaseFirestore.collection('users');
-    await users.doc(_firebaseAuth.currentUser.uid).set({
-      'name': name,
-      'email': email,
-      'createdAt': _firebaseAuth.currentUser.metadata.creationTime,
-    });
   }
 }

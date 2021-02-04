@@ -1,9 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:vent/src/pages/categories_and_tags_page.dart';
-import 'package:vent/src/pages/home_page.dart';
-import 'package:vent/src/pages/my_account_page.dart';
-import 'package:vent/src/pages/signin_page.dart';
+import 'package:vent/src/ui/pages/account_page.dart';
+import 'package:vent/src/ui/pages/categories_and_tags_page.dart';
+import 'package:vent/src/ui/pages/home_page.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -27,7 +25,7 @@ class _HomeState extends State<Home> {
     final _tabPages = <Widget>[
       HomePage(),
       CategoriesAndTagsPage(),
-      FirebaseAuth.instance.currentUser != null ? MyAccountPage() : SiginPage(),
+      AccountPage(),
     ];
     final _bottmonNavBarItems = <BottomNavigationBarItem>[
       const BottomNavigationBarItem(

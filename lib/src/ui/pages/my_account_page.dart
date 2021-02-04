@@ -1,12 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vent/src/blocs/auth/auth_bloc.dart';
 
 class MyAccountPage extends StatefulWidget {
-  _SigninPageState createState() => _SigninPageState();
+  _MyAccountPage createState() => _MyAccountPage();
 }
 
-class _SigninPageState extends State<MyAccountPage> {
+class _MyAccountPage extends State<MyAccountPage> {
   FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
@@ -47,21 +48,15 @@ class _SigninPageState extends State<MyAccountPage> {
                 },
                 child: Text('Verify email'),
               ),
-        RaisedButton(
-          onPressed: () async {
-            if (_auth.currentUser.isAnonymous) {
-              await _auth.currentUser.delete();
-            } else {
-              GoogleSignIn _googleSignIn = GoogleSignIn();
-
-              if (await _googleSignIn.isSignedIn()) {
-                await _googleSignIn.disconnect();
-                await _googleSignIn.signOut();
-              }
-              await _auth.signOut();
-            }
+        BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            return RaisedButton(
+              onPressed: () {
+                context.read<AuthBloc>().add(SignOutRequested());
+              },
+              child: Text('Sign out'),
+            );
           },
-          child: Text('Sign out'),
         )
       ],
     );

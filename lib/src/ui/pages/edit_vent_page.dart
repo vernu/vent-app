@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:vent/src/models/vent.dart';
+import 'package:vent/src/repository/vent_repository.dart';
 
 class EditVentPage extends StatefulWidget {
   _EditVentPageState createState() => _EditVentPageState();
@@ -14,7 +14,6 @@ class EditVentPage extends StatefulWidget {
 
 class _EditVentPageState extends State<EditVentPage> {
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   GlobalKey<FormState> _submitVentFormKey = GlobalKey<FormState>();
   bool isUpdating = false;
@@ -93,12 +92,8 @@ class _EditVentPageState extends State<EditVentPage> {
     setState(() {
       isUpdating = true;
     });
-    await _firebaseFirestore.collection('vents').doc(widget.vent.id).update({
-      'title': title,
-      'vent': vent,
-      'tags': [],
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+    await VentRepository()
+        .updateVent(widget.vent.id, title: title, vent: vent, tags: []);
 
     setState(() {
       isUpdating = false;

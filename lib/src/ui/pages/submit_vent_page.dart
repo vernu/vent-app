@@ -1,14 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:vent/src/repository/vent_repository.dart';
 
 class SubmitVentPage extends StatefulWidget {
   _SubmitVentPageState createState() => _SubmitVentPageState();
 }
 
 class _SubmitVentPageState extends State<SubmitVentPage> {
-  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   GlobalKey<FormState> _submitVentFormKey = GlobalKey<FormState>();
   bool isSubmitting = false;
@@ -17,9 +14,9 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
 
   @override
   Widget build(context) {
-    if (_firebaseAuth.currentUser == null) {
-      Navigator.pop(context);
-    }
+    // if (_firebaseAuth.currentUser == null) {
+    //   Navigator.pop(context);
+    // }
     return Scaffold(
       appBar: AppBar(
         title: Text('Submit Vent'),
@@ -82,37 +79,15 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
     );
   }
 
-  Future<bool> _submitVent(title, vent) async {
+  Future<void> _submitVent(title, vent) async {
     setState(() {
       isSubmitting = true;
     });
-    try {
-      _firebaseFirestore.runTransaction((transaction) async {
-        transaction.set(_firebaseFirestore.collection('vents').doc(), {
-          'userId': _firebaseAuth.currentUser.uid,
-          'title': title,
-          'vent': vent,
-          'createdAt': FieldValue.serverTimestamp(),
-          'updatedAt': FieldValue.serverTimestamp()
-        });
-        DocumentSnapshot userDocSnapshot = await _firebaseFirestore
-            .collection('users')
-            .doc(_firebaseAuth.currentUser.uid)
-            .get();
-        if (userDocSnapshot.exists) {
-          transaction.update(
-              userDocSnapshot.reference, {'numVents': FieldValue.increment(1)});
-        }
-      });
-      return true;
-    } catch (e) {
-      return false;
-    } finally {
-      setState(() {
-        isSubmitting = false;
-      });
+    await VentRepository()
+        .addVent(title: title, vent: vent, tags: []);
 
-      Navigator.pop(context);
-    }
+    setState(() {
+      isSubmitting = false;
+    });
   }
 }
