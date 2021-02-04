@@ -37,6 +37,7 @@ class _HomeState extends State<Home> {
     ];
     assert(_tabPages.length == _bottmonNavBarItems.length);
     final bottomNavBar = BottomNavigationBar(
+      unselectedItemColor: Colors.black38,
       showSelectedLabels: false,
       showUnselectedLabels: false,
       items: _bottmonNavBarItems,
