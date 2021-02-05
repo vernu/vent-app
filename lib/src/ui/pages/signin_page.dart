@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +21,18 @@ class _SigninPageState extends State<SiginPage> {
 
   Widget build(context) {
     return ListView(
+      padding: EdgeInsets.all(8),
       children: [
+        SizedBox(
+          height: 20,
+        ),
+        Text(
+          'Sign in',
+          style: Theme.of(context).textTheme.headline4,
+        ),
+        SizedBox(
+          height: 10,
+        ),
         Form(
           key: _signinFormKey,
           child: Column(children: [
@@ -29,7 +41,6 @@ class _SigninPageState extends State<SiginPage> {
               decoration: InputDecoration(
                 prefixIcon: Icon(
                   Icons.email,
-                  color: Theme.of(context).primaryColor,
                 ),
                 labelText: "Email",
                 hintText: "",
@@ -48,7 +59,6 @@ class _SigninPageState extends State<SiginPage> {
               decoration: InputDecoration(
                 prefixIcon: Icon(
                   Icons.vpn_key,
-                  color: Theme.of(context).primaryColor,
                 ),
                 labelText: "Password",
                 hintText: "",
@@ -62,63 +72,72 @@ class _SigninPageState extends State<SiginPage> {
                 return null;
               },
             ),
-            BlocBuilder<AuthBloc, AuthState>(
-              builder: (context, state) {
-                print(state.toString());
-                if (state is AuthenticationInProgress)
-                  return CircularProgressIndicator();
+            Row(
+              children: [
+                FlatButton(
+                  onPressed: () {},
+                  child: Text('Forgot Password?'),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, state) {
+                    print(state.toString());
+                    if (state is AuthenticationInProgress)
+                      return Center(child: CupertinoActivityIndicator());
 
-                return RaisedButton(
-                    color: Theme.of(context).primaryColor,
-                    elevation: 4,
-                    child: Text(
-                      'Sign in',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    onPressed: () {
-                      if (_signinFormKey.currentState.validate()) {
-                        context.read<AuthBloc>().add(
-                            SignInWithPasswordRequested(
-                                email: email, password: password));
-                      }
-                    });
-              },
+                    return RaisedButton(
+                        elevation: 4,
+                        child: Text(
+                          'Sign in',
+                        ),
+                        onPressed: () {
+                          if (_signinFormKey.currentState.validate()) {
+                            context.read<AuthBloc>().add(
+                                SignInWithPasswordRequested(
+                                    email: email, password: password));
+                          }
+                        });
+                  }),
+                ),
+              ],
             ),
           ]),
         ),
-        RichText(
-          text: new TextSpan(
-              text: "Don't have an account? ",
-              style: TextStyle(fontSize: 16, color: Colors.black),
-              children: [
-                new TextSpan(
-                    text: 'Register',
-                    style: TextStyle(
-                        fontSize: 18,
-                        color: Theme.of(context).primaryColor,
-                        decoration: TextDecoration.underline,
-                        fontWeight: FontWeight.bold),
-                    recognizer: new TapGestureRecognizer()
-                      ..onTap = () {
-                        Navigator.pushNamed(context, '/sign_up');
-                      })
-              ]),
+        Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: RichText(
+            text: TextSpan(text: "Don't have an account? ", children: [
+              TextSpan(
+                  text: 'Register',
+                  style: TextStyle(
+                      fontSize: 18,
+                      decoration: TextDecoration.underline,
+                      fontWeight: FontWeight.bold),
+                  recognizer: new TapGestureRecognizer()
+                    ..onTap = () {
+                      Navigator.pushNamed(context, '/sign_up');
+                    })
+            ]),
+          ),
         ),
+
+        Center(child: Text('OR')),
 
         RaisedButton(
           onPressed: () =>
               context.read<AuthBloc>().add(SignInAnonymouslyRequested()),
-          child: Text('Sigin with Anonymously'),
+          child: Text('Sign in with Anonymously'),
         ),
         RaisedButton(
           onPressed: () => {showPhoneSigninDialog()},
-          child: Text('Sigin with phone'),
+          child: Text('Sign in with phone'),
         ),
         RaisedButton(
           onPressed: () {
             context.read<AuthBloc>().add(SignInWithGoogleRequested());
           },
-          child: Text('Sigin with Google'),
+          child: Text('Sign in with Google'),
         ),
         // RaisedButton(
         //   onPressed: () async {
@@ -127,7 +146,7 @@ class _SigninPageState extends State<SiginPage> {
         //         FacebookAuthProvider.credential(accessToken.token);
         //     await _firebaseAuth.signInWithCredential(facebookAuthCredential);
         //   },
-        //   child: Text('Sigin with Facebook'),
+        //   child: Text('Sign in with Facebook'),
         // ),
         BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {

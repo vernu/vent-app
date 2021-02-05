@@ -28,7 +28,7 @@ class _VentCard1State extends State<VentCard1> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
-                Icons.person,
+                CupertinoIcons.profile_circled ,
                 size: 60,
               ),
               Expanded(
