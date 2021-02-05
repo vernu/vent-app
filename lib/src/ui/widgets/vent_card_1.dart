@@ -25,7 +25,7 @@ class _VentCard1State extends State<VentCard1> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
                 Icons.person,
@@ -94,12 +94,12 @@ class _VentCard1State extends State<VentCard1> {
                                 ? CupertinoActivityIndicator()
                                 : IconButton(
                                     icon: Icon(Icons.delete),
-                                    onPressed: () {
+                                    onPressed: () async {
                                       setState(() {
                                         deleting = true;
                                       });
-
-                                      VentRepository().deleteVent(widget.vent);
+                                      await VentRepository()
+                                          .deleteVent(widget.vent);
 
                                       setState(() {
                                         deleting = false;
