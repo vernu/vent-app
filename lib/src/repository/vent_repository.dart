@@ -19,6 +19,7 @@ class VentRepository {
       vents =
           querySnapshot.docs.map((v) => Vent.fromMap(v.id, v.data())).toList();
     } catch (e) {
+      print(e.toString());
       throw Exception(e);
     }
     return vents;

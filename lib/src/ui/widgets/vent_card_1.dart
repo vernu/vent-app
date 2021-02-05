@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:time_formatter/time_formatter.dart';
 import 'package:vent/src/models/vent.dart';
 import 'package:vent/src/repository/vent_repository.dart';
 
@@ -37,11 +38,27 @@ class _VentCard1State extends State<VentCard1> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Anonymous",
-                      style: Theme.of(context).textTheme.bodyText1.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).accentColor),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "Anonymous",
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText1
+                                .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).accentColor),
+                          ),
+                        ),
+                        Text(
+                          widget.vent.createdAt != null
+                              ? formatTime(
+                                  widget.vent.createdAt.millisecondsSinceEpoch)
+                              : '',
+                          style: Theme.of(context).textTheme.bodyText2,
+                        )
+                      ],
                     ),
                     SizedBox(height: 5),
                     Text("${widget.vent.title}",
@@ -75,41 +92,44 @@ class _VentCard1State extends State<VentCard1> {
                         ),
                         SizedBox(width: 5),
                         Text('${widget.vent.commentCount}'),
+                        Spacer(),
+                        _firebaseAuth.currentUser == null
+                            ? Container()
+                            : widget.vent.userId ==
+                                    _firebaseAuth.currentUser.uid
+                                ? Row(
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Icons.edit),
+                                        onPressed: () {
+                                          Navigator.pushNamed(
+                                              context, '/edit_vent',
+                                              arguments: {'vent': widget.vent});
+                                        },
+                                      ),
+                                      deleting
+                                          ? CupertinoActivityIndicator()
+                                          : IconButton(
+                                              icon: Icon(Icons.delete),
+                                              onPressed: () async {
+                                                setState(() {
+                                                  deleting = true;
+                                                });
+                                                await VentRepository()
+                                                    .deleteVent(widget.vent);
+
+                                                setState(() {
+                                                  deleting = false;
+                                                });
+                                              }),
+                                    ],
+                                  )
+                                : Container(),
                       ],
                     ),
                   ],
                 ),
               ),
-              _firebaseAuth.currentUser == null
-                  ? Container()
-                  : widget.vent.userId == _firebaseAuth.currentUser.uid
-                      ? Column(
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/edit_vent',
-                                    arguments: {'vent': widget.vent});
-                              },
-                            ),
-                            deleting
-                                ? CupertinoActivityIndicator()
-                                : IconButton(
-                                    icon: Icon(Icons.delete),
-                                    onPressed: () async {
-                                      setState(() {
-                                        deleting = true;
-                                      });
-                                      await VentRepository()
-                                          .deleteVent(widget.vent);
-
-                                      setState(() {
-                                        deleting = false;
-                                      });
-                                    }),
-                          ],
-                        )
-                      : Container(),
             ],
           ),
         ),

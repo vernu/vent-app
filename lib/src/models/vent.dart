@@ -5,6 +5,7 @@ class Vent extends Equatable {
   String userId, title, vent;
   int viewCount, commentCount;
   List<String> tags;
+  DateTime createdAt;
 
   Vent({this.id, this.title, this.vent});
   Vent.fromMap(this.id, Map<String, dynamic> map) {
@@ -15,6 +16,8 @@ class Vent extends Equatable {
     this.viewCount = map['viewCount'] ?? 0;
     this.commentCount = map['commentCount'] ?? 0;
     // this.tags = map['tags'] ?? [];
+    this.createdAt =
+        map['createdAt'] != null ? map['createdAt'].toDate() : null;
   }
 
   @override
