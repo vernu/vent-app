@@ -37,6 +37,20 @@ class VentRepository {
     return vent;
   }
 
+  void addVentView(String ventId) {
+    _firebaseFirestore.collection('ventViews').add({
+      'userId': _firebaseAuth.currentUser != null
+          ? _firebaseAuth.currentUser.uid
+          : null,
+      'createdAt': FieldValue.serverTimestamp()
+    }).then((value) {
+      _firebaseFirestore
+          .collection('vents')
+          .doc(ventId)
+          .update({'viewCount': FieldValue.increment(1)});
+    });
+  }
+
   Future<bool> addVent(
       {@required String title,
       @required String vent,

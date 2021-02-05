@@ -21,14 +21,16 @@ class _VentCard1State extends State<VentCard1> {
       child: InkWell(
         highlightColor: Theme.of(context).primaryColor.withOpacity(0.1),
         splashColor: Theme.of(context).primaryColor.withOpacity(0.3),
-        onTap: () {},
+        onTap: () {
+          VentRepository().addVentView(widget.vent.id);
+        },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
-                CupertinoIcons.profile_circled ,
+                CupertinoIcons.profile_circled,
                 size: 60,
               ),
               Expanded(
