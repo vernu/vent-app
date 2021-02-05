@@ -14,19 +14,37 @@ class _HomePageState extends State<HomePage> {
     return BlocProvider(
       create: (context) => VentsBloc()..add(VentsLoadRequested()),
       child: ListView(
+        padding: EdgeInsets.all(8),
         children: [
           BlocBuilder<AuthBloc, AuthState>(
             builder: (context, state) {
               if (state is AuthenticationSuccess)
-                return RaisedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/submit_vent');
-                  },
-                  child: Text('Submit Vent'),
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('What\'s on your mind? ',
+                        style: Theme.of(context).textTheme.headline6),
+                    RaisedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/submit_vent');
+                      },
+                      child: Text('Vent here'),
+                    ),
+                  ],
                 );
               else
-                return Text('signin to vent');
+                return Container();
             },
+          ),
+          Padding(
+            padding: EdgeInsets.all(4),
+            child: Text(
+              "Latest Vents",
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6
+                  .copyWith(fontWeight: FontWeight.w400),
+            ),
           ),
           BlocConsumer<VentsBloc, VentsState>(
             listener: (context, state) {
@@ -42,8 +60,7 @@ class _HomePageState extends State<HomePage> {
                 ));
             },
             builder: (context, state) {
-              print(state.status);
-              print(state.error);
+              // print(state.status);
               if (state.status == Status.Loading)
                 return Center(child: CircularProgressIndicator());
               else if (state.status == Status.Loaded)

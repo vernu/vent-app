@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 class Vent extends Equatable {
   final String id;
   String userId, title, vent;
+  int viewCount, commentCount;
   List<String> tags;
 
   Vent({this.id, this.title, this.vent});
@@ -11,7 +12,9 @@ class Vent extends Equatable {
     this.userId = map['userId'];
     this.title = map['title'];
     this.vent = map['vent'];
-    // this.tags = map['tags'] != null ? map['tags'] : [];
+    this.viewCount = map['viewCount'] ?? 0;
+    this.commentCount = map['commentCount'] ?? 0;
+    // this.tags = map['tags'] ?? [];
   }
 
   @override
