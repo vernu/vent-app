@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:time_formatter/time_formatter.dart';
+import 'package:vent/src/models/comment.dart';
 import 'package:vent/src/models/vent.dart';
 import 'package:vent/src/repository/vent_repository.dart';
 
@@ -35,6 +36,7 @@ class _VentDetailPageState extends State<VentDetailPage> {
                 Text(
                   "Anonymous",
                   style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      fontSize: 21,
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).accentColor),
                 ),
@@ -49,18 +51,82 @@ class _VentDetailPageState extends State<VentDetailPage> {
           ]),
           Divider(),
           Text("${widget.vent.title}",
-              maxLines: 1,
+              // maxLines: 5,
               overflow: TextOverflow.clip,
               style: Theme.of(context).textTheme.bodyText1.copyWith(
+                  fontSize: 24,
                   color: Theme.of(context).accentColor.withOpacity(0.9))),
           SizedBox(height: 5),
           Text(
             "${widget.vent.vent}",
             textAlign: TextAlign.justify,
             style: Theme.of(context).textTheme.bodyText2,
-          )
-          ,
-          Text('Comments'),
+          ),
+          Divider(),
+          Row(
+            children: [
+              Icon(Icons.message),
+              SizedBox(width: 5,),
+              Text(
+                'Comments',
+                style: Theme.of(context).textTheme.bodyText1.copyWith(
+                    fontSize: 18,),
+              ),
+            ],
+          ),
+          FutureBuilder<List<Comment>>(
+              future: VentRepository().getVentComments(widget.vent.id),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                            child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                      child: Text('Anonymous',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1
+                                              .copyWith(
+                                                  color: Theme.of(context)
+                                                      .accentColor
+                                                      .withOpacity(0.9)))),
+                                  Text(
+                                    formatTime(snapshot.data[index].createdAt
+                                        .millisecondsSinceEpoch),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                snapshot.data[index].comment,
+                                maxLines: 10,
+                                overflow: TextOverflow.fade,
+                              ),
+                            ],
+                          ),
+                        ));
+                      });
+                }
+                return Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      CupertinoActivityIndicator(),
+                      Text('Loading Comments')
+                    ],
+                  ),
+                );
+              }),
         ]),
       ),
     );

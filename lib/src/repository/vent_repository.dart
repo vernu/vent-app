@@ -39,6 +39,49 @@ class VentRepository {
     return vent;
   }
 
+  Future<List<Comment>> getVentComments(String ventId, {int limit = 50}) async {
+    List<Comment> comments = [];
+    try {
+      QuerySnapshot querySnapshot = await _firebaseFirestore
+          .collection('vents/$ventId/ventComments')
+          .orderBy('createdAt', descending: true)
+          .limit(limit)
+          .get();
+
+      comments = querySnapshot.docs
+          .map((v) => Comment.fromMap(v.id, v.data()))
+          .toList();
+    } catch (e) {
+      print(e.toString());
+      throw Exception(e);
+    }
+    return comments;
+  }
+
+  Future<bool> addVentComment(String ventId, {@required String comment}) async {
+    try {
+      await _firebaseFirestore.runTransaction((transaction) async {
+        transaction.set(
+            _firebaseFirestore.collection('/vents/$ventId/ventComments').doc(),
+            {
+              'userId': _firebaseAuth.currentUser != null
+                  ? _firebaseAuth.currentUser.uid
+                  : null,
+              'comment': comment,
+              'likeCount': 0,
+              'replyCount': 0,
+              'createdAt': FieldValue.serverTimestamp()
+            });
+        transaction.update(_firebaseFirestore.collection('/vents').doc(ventId),
+            {'commentCount': FieldValue.increment(1)});
+      });
+      return true;
+    } catch (e) {
+      print(e.toString());
+      return false;
+    } finally {}
+  }
+
   void addVentView(String ventId) {
     _firebaseFirestore.collection('/vents/$ventId/ventViews').add({
       'userId': _firebaseAuth.currentUser != null
