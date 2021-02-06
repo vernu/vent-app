@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vent/src/blocs/home_nav/home_nav_cubit.dart';
 import 'package:vent/src/ui/pages/account_page.dart';
 import 'package:vent/src/ui/pages/categories_and_tags_page.dart';
 import 'package:vent/src/ui/pages/home_page.dart';
@@ -12,7 +14,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   PageController _pageController;
-  int _currentTabIndex = 0;
 
   @override
   void initState() {
@@ -22,56 +23,61 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final _tabPages = <Widget>[
-      HomePage(),
-      CategoriesAndTagsPage(),
-      AccountPage(),
-    ];
-    final _bottmonNavBarItems = <BottomNavigationBarItem>[
-      const BottomNavigationBarItem(
-          icon: Icon(Icons.home), title: Text('Home')),
-      const BottomNavigationBarItem(
-          icon: Icon(Icons.category), title: Text('Categories and Tags')),
-      const BottomNavigationBarItem(
-          icon: Icon(Icons.person), title: Text('Account')),
-    ];
-    assert(_tabPages.length == _bottmonNavBarItems.length);
-    final bottomNavBar = BottomNavigationBar(
-      showSelectedLabels: false,
-      showUnselectedLabels: false,
-      items: _bottmonNavBarItems,
-      currentIndex: _currentTabIndex,
-      type: BottomNavigationBarType.fixed,
-      onTap: (index) {
-        setState(() => _currentTabIndex = index);
-        _pageController.animateToPage(index,
-            duration: Duration(milliseconds: 500), curve: Curves.easeOut);
-      },
-    );
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Vent'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              Navigator.pushNamed(context, '/settings');
-            },
-            tooltip: 'Settings',
-          )
-        ],
+    return BlocProvider(
+      create: (context) => HomeNavCubit(),
+      child: BlocBuilder<HomeNavCubit, HomeNavState>(
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Vent'),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.settings),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/settings');
+                  },
+                  tooltip: 'Settings',
+                )
+              ],
+            ),
+            body: SafeArea(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  context.read<HomeNavCubit>().changeCurrentIndex(index);
+                },
+                children: [
+                  HomePage(),
+                  CategoriesAndTagsPage(),
+                  AccountPage(),
+                ],
+              ),
+            ),
+            bottomNavigationBar: BottomNavigationBar(
+              showSelectedLabels: false,
+              showUnselectedLabels: false,
+              items: [
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.home), title: Text('Home')),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.category),
+                    title: Text('Categories and Tags')),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.person), title: Text('Account')),
+              ],
+              currentIndex: state.selectedIndex,
+              type: BottomNavigationBarType.fixed,
+              onTap: (index) {
+                context.read<HomeNavCubit>().changeCurrentIndex(index);
+                _pageController.jumpToPage(index);
+                // _pageController.animateToPage(index,
+                //     duration: Duration(milliseconds: 500),
+                //     curve: Curves.easeOut);
+              },
+            ),
+          );
+        },
       ),
-      body: SafeArea(
-        child: PageView(
-          controller: _pageController,
-          onPageChanged: (index) {
-            setState(() => _currentTabIndex = index);
-          },
-          children: _tabPages,
-        ),
-      ),
-      bottomNavigationBar: bottomNavBar,
     );
   }
 }
