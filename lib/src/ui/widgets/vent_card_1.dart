@@ -24,7 +24,8 @@ class _VentCard1State extends State<VentCard1> {
         highlightColor: Theme.of(context).primaryColor.withOpacity(0.1),
         splashColor: Theme.of(context).primaryColor.withOpacity(0.3),
         onTap: () async {
-          VentRepository().addVentView(widget.vent.id);
+          Navigator.pushNamed(context, '/vent_detail',
+              arguments: {'vent': widget.vent});
         },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -72,6 +73,7 @@ class _VentCard1State extends State<VentCard1> {
                     SizedBox(height: 5),
                     Text(
                       "${widget.vent.vent}",
+                      textAlign: TextAlign.justify,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyText2,

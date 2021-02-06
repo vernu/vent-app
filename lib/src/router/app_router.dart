@@ -4,6 +4,7 @@ import 'package:vent/src/ui/pages/edit_vent_page.dart';
 import 'package:vent/src/ui/pages/settings_page.dart';
 import 'package:vent/src/ui/pages/signup_page.dart';
 import 'package:vent/src/ui/pages/submit_vent_page.dart';
+import 'package:vent/src/ui/pages/vent_detail_page.dart';
 
 class AppRouter {
   static Route onGenerateRoute(RouteSettings routeSettings) {
@@ -23,6 +24,9 @@ class AppRouter {
         break;
       case '/edit_vent':
         return MaterialPageRoute(builder: (_) => EditVentPage(args['vent']));
+        break;
+      case '/vent_detail':
+        return MaterialPageRoute(builder: (_) => VentDetailPage(args['vent']));
         break;
 
       default:
