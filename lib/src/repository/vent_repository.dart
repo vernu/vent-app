@@ -39,7 +39,7 @@ class VentRepository {
   }
 
   void addVentView(String ventId) {
-    _firebaseFirestore.collection('ventViews').add({
+    _firebaseFirestore.collection('/vents/$ventId/ventViews').add({
       'userId': _firebaseAuth.currentUser != null
           ? _firebaseAuth.currentUser.uid
           : null,
@@ -98,13 +98,21 @@ class VentRepository {
 
     try {
       _firebaseFirestore.runTransaction((transaction) async {
-        transaction.delete(_firebaseFirestore.collection('vents').doc(vent.id));
-        DocumentSnapshot userDocSnapshot =
-            await _firebaseFirestore.collection('users').doc(vent.userId).get();
+        DocumentSnapshot ventDocSnapshot =
+            await _firebaseFirestore.collection('vents').doc(vent.id).get();
+        if (ventDocSnapshot.exists) {
+          transaction.delete(ventDocSnapshot.reference);
+          DocumentSnapshot userDocSnapshot = await _firebaseFirestore
+              .collection('users')
+              .doc(vent.userId)
+              .get();
 
-        if (userDocSnapshot.exists) {
-          transaction.update(userDocSnapshot.reference,
-              {'numVents': FieldValue.increment(-1)});
+          if (userDocSnapshot.exists) {
+            transaction.update(userDocSnapshot.reference,
+                {'numVents': FieldValue.increment(-1)});
+          }
+        } else {
+          print('document snanpshot doesnt exist');
         }
       });
     } catch (e) {
