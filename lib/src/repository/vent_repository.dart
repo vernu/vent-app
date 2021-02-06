@@ -82,6 +82,35 @@ class VentRepository {
     } finally {}
   }
 
+  Future<void> deleteVentComment(Comment comment) async {
+    // await _firebaseFirestore.collection('vents').doc(ventDocId).delete();
+
+    try {
+      await _firebaseFirestore.runTransaction((transaction) async {
+        DocumentSnapshot ventCommentSnapshot = await _firebaseFirestore
+            .collection('vents/${comment.ventId}/ventComments')
+            .doc(comment.id)
+            .get();
+        if (ventCommentSnapshot.exists) {
+          transaction.delete(ventCommentSnapshot.reference);
+          DocumentSnapshot userDocSnapshot = await _firebaseFirestore
+              .collection('users')
+              .doc(comment.userId)
+              .get();
+
+          if (userDocSnapshot.exists) {
+            transaction.update(userDocSnapshot.reference,
+                {'numVents': FieldValue.increment(-1)});
+          }
+        } else {
+          print('document snanpshot doesnt exist');
+        }
+      });
+    } catch (e) {
+      print(e);
+    } finally {}
+  }
+
   void addVentView(String ventId) {
     _firebaseFirestore.collection('/vents/$ventId/ventViews').add({
       'userId': _firebaseAuth.currentUser != null
