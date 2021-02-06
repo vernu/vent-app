@@ -12,6 +12,8 @@ class VentDetailPage extends StatefulWidget {
 }
 
 class _VentDetailPageState extends State<VentDetailPage> {
+  GlobalKey<FormState> commentFormKey = GlobalKey<FormState>();
+  String comment;
   @override
   initState() {
     super.initState();
@@ -63,19 +65,82 @@ class _VentDetailPageState extends State<VentDetailPage> {
             style: Theme.of(context).textTheme.bodyText2,
           ),
           Divider(),
+          Container(
+            height: 230,
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Form(
+                  key: commentFormKey,
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextFormField(
+                          maxLines: 5,
+                          minLines: 5,
+                          keyboardType: TextInputType.multiline,
+                          decoration: InputDecoration(
+                            // prefixIcon: Icon(
+                            //   Icons.comment,
+                            // ),
+                            labelText: "Comment",
+                            hintText: "Write your comment here..",
+                          ),
+                          validator: (val) {
+                            if (val.isEmpty) {
+                              return 'Please enter comment';
+                            }
+                            comment = val;
+                            return null;
+                          },
+                        ),
+                        RaisedButton(
+                          onPressed: () async {
+                            if (commentFormKey.currentState.validate()) {
+                              // Scaffold.of(context).showSnackBar(
+                              //     SnackBar(content: Text('Submitting Review')));
+                              bool success = await VentRepository()
+                                  .addVentComment(widget.vent.id,
+                                      comment: comment);
+                              if (success) {
+                                SnackBar(content: Text('Review Submitted'));
+                                VentRepository().getVentComments(
+                                  widget.vent.id,
+                                );
+                              } else {
+                                SnackBar(
+                                    content: Text('Failed to Submit Review'));
+                              }
+                            }
+                          },
+                          child: Text('Send'),
+                        ),
+                      ]),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 20),
           Row(
             children: [
               Icon(Icons.message),
-              SizedBox(width: 5,),
+              SizedBox(
+                width: 5,
+              ),
               Text(
                 'Comments',
                 style: Theme.of(context).textTheme.bodyText1.copyWith(
-                    fontSize: 18,),
+                      fontSize: 18,
+                    ),
               ),
             ],
           ),
-          FutureBuilder<List<Comment>>(
-              future: VentRepository().getVentComments(widget.vent.id),
+          SizedBox(
+            width: 5,
+          ),
+          StreamBuilder<List<Comment>>(
+              stream:
+                  VentRepository().getVentComments(widget.vent.id).asStream(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return ListView.builder(
