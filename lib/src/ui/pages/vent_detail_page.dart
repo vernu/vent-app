@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:time_formatter/time_formatter.dart';
+import 'package:vent/src/blocs/auth/auth_bloc.dart';
 import 'package:vent/src/blocs/vent_detail/vent_detail_bloc.dart';
 import 'package:vent/src/models/comment.dart';
 import 'package:vent/src/models/vent.dart';
@@ -75,61 +76,72 @@ class _VentDetailPageState extends State<VentDetailPage> {
                 style: Theme.of(context).textTheme.bodyText2,
               ),
               Divider(),
-              Container(
-                height: 230,
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Form(
-                      key: commentFormKey,
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextFormField(
-                              maxLines: 5,
-                              minLines: 5,
-                              keyboardType: TextInputType.multiline,
-                              decoration: InputDecoration(
-                                // prefixIcon: Icon(
-                                //   Icons.comment,
-                                // ),
-                                labelText: "Comment",
-                                hintText: "Write your comment here..",
-                              ),
-                              validator: (val) {
-                                if (val.isEmpty) {
-                                  return 'Please enter comment';
-                                }
-                                comment = val;
-                                return null;
-                              },
-                            ),
-                            RaisedButton(
-                              onPressed: () async {
-                                if (commentFormKey.currentState.validate()) {
-                                  // Scaffold.of(context).showSnackBar(
-                                  //     SnackBar(content: Text('Submitting Review')));
-                                  bool success = await VentRepository()
-                                      .addVentComment(widget.vent.id,
-                                          comment: comment);
-                                  if (success) {
-                                    SnackBar(content: Text('Review Submitted'));
-                                    VentRepository().getVentComments(
-                                      widget.vent.id,
-                                    );
-                                  } else {
-                                    SnackBar(
-                                        content:
-                                            Text('Failed to Submit Review'));
-                                  }
-                                }
-                              },
-                              child: Text('Send'),
-                            ),
-                          ]),
-                    ),
-                  ),
-                ),
+              BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  if (state is AuthenticationSuccess) {
+                    return Container(
+                      height: 230,
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Form(
+                            key: commentFormKey,
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  TextFormField(
+                                    maxLines: 5,
+                                    minLines: 5,
+                                    keyboardType: TextInputType.multiline,
+                                    decoration: InputDecoration(
+                                      // prefixIcon: Icon(
+                                      //   Icons.comment,
+                                      // ),
+                                      labelText: "Comment",
+                                      hintText: "Write your comment here..",
+                                    ),
+                                    validator: (val) {
+                                      if (val.isEmpty) {
+                                        return 'Please enter comment';
+                                      }
+                                      comment = val;
+                                      return null;
+                                    },
+                                  ),
+                                  BlocBuilder<VentDetailBloc, VentDetailState>(
+                                    builder: (context, state) {
+                                      if (state.submittingComment) {
+                                        return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      }
+                                      return RaisedButton(
+                                        onPressed: () async {
+                                          if (commentFormKey.currentState
+                                              .validate()) {
+                                            context.read<VentDetailBloc>().add(
+                                                VentCommentSubmitted(
+                                                    vent: widget.vent,
+                                                    comment: comment));
+                                          }
+                                        },
+                                        child: Text('Send'),
+                                      );
+                                    },
+                                  ),
+                                ]),
+                          ),
+                        ),
+                      ),
+                    );
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('Sign in to submit a comment'),
+                    );
+                  }
+                },
               ),
               SizedBox(height: 20),
               Row(

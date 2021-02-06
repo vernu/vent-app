@@ -34,6 +34,22 @@ class VentDetailBloc extends Bloc<VentDetailEvent, VentDetailState> {
           commentsLoadingStatus: CommentsLoadingStatus.LoadingFailed,
         );
       }
+    } else if (event is VentCommentSubmitted) {
+      yield this.state.copyWith(
+            submittingComment: true,
+          );
+      try {
+        await VentRepository()
+            .addVentComment(event.vent.id, comment: event.comment);
+        this.add(VentCommentsLoadRequested(vent: event.vent));
+        yield this.state.copyWith(
+              submittingComment: false,
+            );
+      } catch (e) {
+        yield this.state.copyWith(
+              submittingComment: false,
+            );
+      }
     }
   }
 }

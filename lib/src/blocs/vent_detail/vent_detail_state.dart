@@ -5,6 +5,18 @@ enum CommentsLoadingStatus { Initial, Loading, Loaded, LoadingFailed }
 class VentDetailState {
   final CommentsLoadingStatus commentsLoadingStatus;
   final List<Comment> ventComments;
-  const VentDetailState(
-      {@required this.commentsLoadingStatus, this.ventComments = const []});
+  final bool submittingComment;
+  VentDetailState(
+      {this.commentsLoadingStatus = CommentsLoadingStatus.Initial,
+      this.ventComments = const [],
+      this.submittingComment = false});
+
+  VentDetailState copyWith(
+      {commentsLoadingStatus, ventComments, submittingComment}) {
+    return VentDetailState(
+        commentsLoadingStatus:
+            commentsLoadingStatus ?? this.commentsLoadingStatus,
+        ventComments: ventComments ?? this.ventComments,
+        submittingComment: submittingComment ?? this.submittingComment);
+  }
 }

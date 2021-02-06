@@ -11,3 +11,9 @@ class VentCommentsLoadRequested extends VentDetailEvent {
   final Vent vent;
   VentCommentsLoadRequested({@required this.vent});
 }
+
+class VentCommentSubmitted extends VentDetailEvent {
+  final Vent vent;
+  final String comment;
+  VentCommentSubmitted({@required this.vent, @required this.comment});
+}
