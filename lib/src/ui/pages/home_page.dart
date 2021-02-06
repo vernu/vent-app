@@ -68,6 +68,7 @@ class _HomePageState extends State<HomePage> {
           onRefresh: _onRefresh,
           onLoading: _onLoading,
           child: ListView(
+            padding: EdgeInsets.all(8),
             children: [
               BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, state) {
