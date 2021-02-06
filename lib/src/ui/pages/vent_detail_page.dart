@@ -151,7 +151,7 @@ class _VentDetailPageState extends State<VentDetailPage> {
                     width: 5,
                   ),
                   Text(
-                    'Comments',
+                    'Comments (${widget.vent.commentCount})',
                     style: Theme.of(context).textTheme.bodyText1.copyWith(
                           fontSize: 18,
                         ),
