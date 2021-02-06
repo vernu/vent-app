@@ -16,14 +16,14 @@ class VentsBloc extends Bloc<VentsEvent, VentsState> {
     VentsEvent event,
   ) async* {
     if (event is VentsLoadRequested) {
-      yield VentsState(status: Status.Loading);
+      yield this.state.copyWith(status: Status.Loading);
       try {
         List<Vent> vents = await VentRepository().getLatestVents();
         yield VentsState(status: Status.Loaded, vents: vents);
       } catch (e) {
-        yield VentsState().copyWith(
-          status: Status.LoadingFail, 
-        );
+        yield this
+            .state
+            .copyWith(status: Status.LoadingFail, error: e.toString());
       }
     }
   }

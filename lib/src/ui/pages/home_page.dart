@@ -108,10 +108,11 @@ class _HomePageState extends State<HomePage> {
                   } else if (state.status == Status.LoadingFail) {
                     _refreshController.refreshFailed();
                     Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text('Failed loading vents'),
+                      content: Text('Failed loading vents : ${state.error}'),
                       action: SnackBarAction(
                         onPressed: () {
-                          context.read<VentsBloc>().add(VentsLoadRequested());
+                          _refreshController.requestRefresh();
+                          // context.read<VentsBloc>().add(VentsLoadRequested());
                         },
                         label: 'Retry',
                       ),
