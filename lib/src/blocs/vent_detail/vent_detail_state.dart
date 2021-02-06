@@ -1,10 +1,10 @@
 part of 'vent_detail_bloc.dart';
 
-abstract class VentDetailState extends Equatable {
-  const VentDetailState();
-  
-  @override
-  List<Object> get props => [];
-}
+enum CommentsLoadingStatus { Initial, Loading, Loaded, LoadingFailed }
 
-class VentDetailInitial extends VentDetailState {}
+class VentDetailState {
+  final CommentsLoadingStatus commentsLoadingStatus;
+  final List<Comment> ventComments;
+  const VentDetailState(
+      {@required this.commentsLoadingStatus, this.ventComments = const []});
+}

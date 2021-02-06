@@ -6,3 +6,8 @@ abstract class VentDetailEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class VentCommentsLoadRequested extends VentDetailEvent {
+  final Vent vent;
+  VentCommentsLoadRequested({@required this.vent});
+}

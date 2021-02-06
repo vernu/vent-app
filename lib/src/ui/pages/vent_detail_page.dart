@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:time_formatter/time_formatter.dart';
+import 'package:vent/src/blocs/vent_detail/vent_detail_bloc.dart';
 import 'package:vent/src/models/comment.dart';
 import 'package:vent/src/models/vent.dart';
 import 'package:vent/src/repository/vent_repository.dart';
@@ -12,188 +14,206 @@ class VentDetailPage extends StatefulWidget {
 }
 
 class _VentDetailPageState extends State<VentDetailPage> {
+  VentDetailBloc ventDetailBloc;
   GlobalKey<FormState> commentFormKey = GlobalKey<FormState>();
   String comment;
   @override
   initState() {
     super.initState();
+    ventDetailBloc = VentDetailBloc();
+    ventDetailBloc.add(VentCommentsLoadRequested(vent: widget.vent));
     VentRepository().addVentView(widget.vent.id);
   }
 
   @override
   Widget build(contex) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.vent.title),
-      ),
-      body: SafeArea(
-        child: ListView(padding: EdgeInsets.all(8), children: [
-          Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-            Icon(
-              CupertinoIcons.profile_circled,
-              size: 60,
-            ),
-            Column(
-              children: [
-                Text(
-                  "Anonymous",
-                  style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      fontSize: 21,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).accentColor),
-                ),
-                Text(
-                  widget.vent.createdAt != null
-                      ? formatTime(widget.vent.createdAt.millisecondsSinceEpoch)
-                      : '',
-                  style: Theme.of(context).textTheme.bodyText2,
-                )
-              ],
-            )
-          ]),
-          Divider(),
-          Text("${widget.vent.title}",
-              // maxLines: 5,
-              overflow: TextOverflow.clip,
-              style: Theme.of(context).textTheme.bodyText1.copyWith(
-                  fontSize: 24,
-                  color: Theme.of(context).accentColor.withOpacity(0.9))),
-          SizedBox(height: 5),
-          Text(
-            "${widget.vent.vent}",
-            textAlign: TextAlign.justify,
-            style: Theme.of(context).textTheme.bodyText2,
+    return MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (context) => ventDetailBloc),
+        ],
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(widget.vent.title),
           ),
-          Divider(),
-          Container(
-            height: 230,
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Form(
-                  key: commentFormKey,
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextFormField(
-                          maxLines: 5,
-                          minLines: 5,
-                          keyboardType: TextInputType.multiline,
-                          decoration: InputDecoration(
-                            // prefixIcon: Icon(
-                            //   Icons.comment,
-                            // ),
-                            labelText: "Comment",
-                            hintText: "Write your comment here..",
-                          ),
-                          validator: (val) {
-                            if (val.isEmpty) {
-                              return 'Please enter comment';
-                            }
-                            comment = val;
-                            return null;
-                          },
-                        ),
-                        RaisedButton(
-                          onPressed: () async {
-                            if (commentFormKey.currentState.validate()) {
-                              // Scaffold.of(context).showSnackBar(
-                              //     SnackBar(content: Text('Submitting Review')));
-                              bool success = await VentRepository()
-                                  .addVentComment(widget.vent.id,
-                                      comment: comment);
-                              if (success) {
-                                SnackBar(content: Text('Review Submitted'));
-                                VentRepository().getVentComments(
-                                  widget.vent.id,
-                                );
-                              } else {
-                                SnackBar(
-                                    content: Text('Failed to Submit Review'));
-                              }
-                            }
-                          },
-                          child: Text('Send'),
-                        ),
-                      ]),
+          body: SafeArea(
+            child: ListView(padding: EdgeInsets.all(8), children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                Icon(
+                  CupertinoIcons.profile_circled,
+                  size: 60,
+                ),
+                Column(
+                  children: [
+                    Text(
+                      "Anonymous",
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                          fontSize: 21,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).accentColor),
+                    ),
+                    Text(
+                      widget.vent.createdAt != null
+                          ? formatTime(
+                              widget.vent.createdAt.millisecondsSinceEpoch)
+                          : '',
+                      style: Theme.of(context).textTheme.bodyText2,
+                    )
+                  ],
+                )
+              ]),
+              Divider(),
+              Text("${widget.vent.title}",
+                  // maxLines: 5,
+                  overflow: TextOverflow.clip,
+                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      fontSize: 24,
+                      color: Theme.of(context).accentColor.withOpacity(0.9))),
+              SizedBox(height: 5),
+              Text(
+                "${widget.vent.vent}",
+                textAlign: TextAlign.justify,
+                style: Theme.of(context).textTheme.bodyText2,
+              ),
+              Divider(),
+              Container(
+                height: 230,
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Form(
+                      key: commentFormKey,
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextFormField(
+                              maxLines: 5,
+                              minLines: 5,
+                              keyboardType: TextInputType.multiline,
+                              decoration: InputDecoration(
+                                // prefixIcon: Icon(
+                                //   Icons.comment,
+                                // ),
+                                labelText: "Comment",
+                                hintText: "Write your comment here..",
+                              ),
+                              validator: (val) {
+                                if (val.isEmpty) {
+                                  return 'Please enter comment';
+                                }
+                                comment = val;
+                                return null;
+                              },
+                            ),
+                            RaisedButton(
+                              onPressed: () async {
+                                if (commentFormKey.currentState.validate()) {
+                                  // Scaffold.of(context).showSnackBar(
+                                  //     SnackBar(content: Text('Submitting Review')));
+                                  bool success = await VentRepository()
+                                      .addVentComment(widget.vent.id,
+                                          comment: comment);
+                                  if (success) {
+                                    SnackBar(content: Text('Review Submitted'));
+                                    VentRepository().getVentComments(
+                                      widget.vent.id,
+                                    );
+                                  } else {
+                                    SnackBar(
+                                        content:
+                                            Text('Failed to Submit Review'));
+                                  }
+                                }
+                              },
+                              child: Text('Send'),
+                            ),
+                          ]),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          SizedBox(height: 20),
-          Row(
-            children: [
-              Icon(Icons.message),
+              SizedBox(height: 20),
+              Row(
+                children: [
+                  Icon(Icons.message),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    'Comments',
+                    style: Theme.of(context).textTheme.bodyText1.copyWith(
+                          fontSize: 18,
+                        ),
+                  ),
+                ],
+              ),
               SizedBox(
                 width: 5,
               ),
-              Text(
-                'Comments',
-                style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      fontSize: 18,
-                    ),
+              BlocBuilder<VentDetailBloc, VentDetailState>(
+                builder: (context, state) {
+                  List<Comment> comments = state.ventComments;
+                  if (state.commentsLoadingStatus ==
+                      CommentsLoadingStatus.Loading) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CupertinoActivityIndicator(),
+                        Text('Loading Comments')
+                      ],
+                    );
+                  } else if (state.commentsLoadingStatus ==
+                      CommentsLoadingStatus.LoadingFailed) {
+                    return Center(child: Text('Failed Loading Comments'));
+                  } else if (state.commentsLoadingStatus ==
+                      CommentsLoadingStatus.Loaded) {
+                    if (state.ventComments.length == 0) {
+                      return Center(child: Text('There are no comments yet'));
+                    }
+                    return ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: comments.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                              child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                        child: Text('Anonymous',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1
+                                                .copyWith(
+                                                    color: Theme.of(context)
+                                                        .accentColor
+                                                        .withOpacity(0.9)))),
+                                    Text(
+                                      formatTime(comments[index]
+                                          .createdAt
+                                          .millisecondsSinceEpoch),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  comments[index].comment,
+                                  maxLines: 10,
+                                  overflow: TextOverflow.fade,
+                                ),
+                              ],
+                            ),
+                          ));
+                        });
+                  }
+                  return SizedBox();
+                },
               ),
-            ],
+            ]),
           ),
-          SizedBox(
-            width: 5,
-          ),
-          StreamBuilder<List<Comment>>(
-              stream:
-                  VentRepository().getVentComments(widget.vent.id).asStream(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (context, index) {
-                        return Card(
-                            child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                      child: Text('Anonymous',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1
-                                              .copyWith(
-                                                  color: Theme.of(context)
-                                                      .accentColor
-                                                      .withOpacity(0.9)))),
-                                  Text(
-                                    formatTime(snapshot.data[index].createdAt
-                                        .millisecondsSinceEpoch),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 10),
-                              Text(
-                                snapshot.data[index].comment,
-                                maxLines: 10,
-                                overflow: TextOverflow.fade,
-                              ),
-                            ],
-                          ),
-                        ));
-                      });
-                }
-                return Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      CupertinoActivityIndicator(),
-                      Text('Loading Comments')
-                    ],
-                  ),
-                );
-              }),
-        ]),
-      ),
-    );
+        ));
   }
 }
