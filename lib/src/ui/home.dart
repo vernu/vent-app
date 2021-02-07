@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vent/src/blocs/home_nav/home_nav_cubit.dart';
@@ -27,9 +28,41 @@ class _HomeState extends State<Home> {
       create: (context) => HomeNavCubit(),
       child: BlocBuilder<HomeNavCubit, HomeNavState>(
         builder: (context, state) {
+          print(state.selectedIndex);
           return Scaffold(
             appBar: AppBar(
-              title: Text('Vent'),
+              leading: (() {
+                switch (state.selectedIndex) {
+                  case 0:
+                    return Icon(CupertinoIcons.home);
+                    break;
+                  case 1:
+                    return Icon(CupertinoIcons.tags);
+                    break;
+                  case 2:
+                    return Icon(CupertinoIcons.person);
+                    break;
+                  default:
+                    return Icon(CupertinoIcons.home);
+                    break;
+                }
+              }()),
+              title: (() {
+                switch (state.selectedIndex) {
+                  case 0:
+                    return Text('Home');
+                    break;
+                  case 1:
+                    return Text('Categories and Tags');
+                    break;
+                  case 2:
+                    return Text('My Account');
+                    break;
+                  default:
+                    return Text('Vent');
+                    break;
+                }
+              }()),
               actions: [
                 IconButton(
                   icon: Icon(Icons.settings),
