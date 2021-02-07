@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:vent/src/models/category.dart';
 import 'package:vent/src/repository/category_repository.dart';
@@ -12,18 +13,29 @@ class _CategoriesAndTagsPageState extends State<CategoriesAndTagsPage> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListView(
+        padding: EdgeInsets.all(8),
         children: [
+          SizedBox(height: 5),
           Text(
             'Categories',
             style: TextStyle(fontSize: 22),
           ),
+          SizedBox(height: 10),
           FutureBuilder<List<Category>>(
               future: CategoryRepository().getCategories(),
               builder: _categoriesBuilder),
-          Text(
-            'Tags',
-            style: TextStyle(fontSize: 22),
+          SizedBox(height: 10),
+          Row(
+            children: [
+              Icon(CupertinoIcons.tags),
+              SizedBox(width: 10),
+              Text(
+                'Tags',
+                style: TextStyle(fontSize: 22),
+              ),
+            ],
           ),
+          SizedBox(height: 10),
           Wrap(
             children: List.generate(15, (i) {
               return i + 1;
@@ -59,8 +71,24 @@ class _CategoriesAndTagsPageState extends State<CategoriesAndTagsPage> {
         crossAxisCount: 3,
         childAspectRatio: 2,
         children: categories
-            .map((category) =>
-                Card(child: Center(child: Text('${category.name} '))))
+            .map((category) => Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: InkWell(
+                    onTap: () {},
+                    child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Theme.of(context).primaryColor.withOpacity(0.4),
+                              Theme.of(context).primaryColor.withOpacity(0.1),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                        ),
+                        child: Center(child: Text('${category.name} '))),
+                  ),
+                ))
             .toList());
   }
 }
