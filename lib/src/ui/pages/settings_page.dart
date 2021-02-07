@@ -29,18 +29,36 @@ class _SettingsPageState extends State<SettingsPage> {
                     itemBuilder: (context, index) {
                       final itemAppTheme = AppTheme.values[index];
 
-                      return RaisedButton(
-                          color: appThemeData[itemAppTheme].primaryColor,
-                          child: Text(
-                            itemAppTheme.toString(),
-                            style:
-                                appThemeData[itemAppTheme].textTheme.bodyText1,
-                          ),
-                          onPressed: () {
-                            context
-                                .read<ThemeBloc>()
-                                .add(ThemeChanged(itemAppTheme));
-                          });
+                      return Card(
+                        color: appThemeData[itemAppTheme].backgroundColor,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: RaisedButton(
+                                  color:
+                                      appThemeData[itemAppTheme].primaryColor,
+                                  child: Text(
+                                    itemAppTheme
+                                        .toString()
+                                        .replaceAll('AppTheme.', ''),
+                                    style: appThemeData[itemAppTheme]
+                                        .textTheme
+                                        .bodyText1,
+                                  ),
+                                  onPressed: () {
+                                    context
+                                        .read<ThemeBloc>()
+                                        .add(ThemeChanged(itemAppTheme));
+
+                                    Scaffold.of(context).showSnackBar(SnackBar(
+                                      content: Text(('Theme Changed')),
+                                    ));
+                                  }),
+                            ),
+                          ],
+                        ),
+                      );
                     })
               ]),
         ],
