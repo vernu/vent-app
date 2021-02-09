@@ -18,6 +18,7 @@ class _EditVentPageState extends State<EditVentPage> {
   GlobalKey<FormState> _submitVentFormKey = GlobalKey<FormState>();
   bool isUpdating = false;
   String title, vent;
+  List<String> tags;
 
   @override
   Widget build(context) {
@@ -61,9 +62,27 @@ class _EditVentPageState extends State<EditVentPage> {
                           if (val.isEmpty) {
                             return 'vent field is required';
                           }
-                          setState(() {
-                            vent = val;
-                          });
+
+                          vent = val;
+                          setState(() {});
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        minLines: 3,
+                        maxLines: 3,
+                        initialValue: widget.vent.tags.join(' '),
+                        keyboardType: TextInputType.multiline,
+                        decoration: InputDecoration(
+                            labelText: 'tags',
+                            hintText: 'tags (separate by space)'),
+                        validator: (val) {
+                          // check for special characters
+                          // if (val.contains(RegExp(r'[]')) ) {
+                          //   return 'invalid characters';
+                          // }
+                          tags = val.trim().split(' ');
+                          setState(() {});
                           return null;
                         },
                       ),
@@ -74,7 +93,7 @@ class _EditVentPageState extends State<EditVentPage> {
                                 onPressed: () async {
                                   if (_submitVentFormKey.currentState
                                       .validate()) {
-                                    _updateVent(title, vent);
+                                    _updateVent();
                                   }
                                 },
                                 child: Text('Update'))
@@ -88,16 +107,17 @@ class _EditVentPageState extends State<EditVentPage> {
     );
   }
 
-  _updateVent(title, vent) async {
-    setState(() {
-      isUpdating = true;
-    });
-    await VentRepository()
-        .updateVent(widget.vent.id, title: title, vent: vent, tags: []);
+  _updateVent() async {
+    isUpdating = true;
+    setState(() {});
 
-    setState(() {
-      isUpdating = false;
-    });
+    await VentRepository()
+        .updateVent(widget.vent.id, title: title, vent: vent, tags: [
+      ...{...tags}
+    ] /*remove duplicates*/);
+
+    isUpdating = false;
+    setState(() {});
     Navigator.pop(context);
   }
 }

@@ -6,11 +6,11 @@ class SubmitVentPage extends StatefulWidget {
 }
 
 class _SubmitVentPageState extends State<SubmitVentPage> {
-
   GlobalKey<FormState> _submitVentFormKey = GlobalKey<FormState>();
   bool isSubmitting = false;
 
   String title, vent;
+  List<String> tags = [];
 
   @override
   Widget build(context) {
@@ -52,9 +52,25 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
                           if (val.isEmpty) {
                             return 'vent field is required';
                           }
-                          setState(() {
-                            vent = val;
-                          });
+                          vent = val;
+                          setState(() {});
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        minLines: 3,
+                        maxLines: 3,
+                        keyboardType: TextInputType.multiline,
+                        decoration: InputDecoration(
+                            labelText: 'tags',
+                            hintText: 'tags (separate by space)'),
+                        validator: (val) {
+                          // check for special characters
+                          // if (val.contains(RegExp(r'[]')) ) {
+                          //   return 'invalid characters';
+                          // }
+                          tags = val.trim().split(' ');
+                          setState(() {});
                           return null;
                         },
                       ),
@@ -65,7 +81,7 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
                                 onPressed: () async {
                                   if (_submitVentFormKey.currentState
                                       .validate()) {
-                                    _submitVent(title, vent);
+                                    _submitVent();
                                   }
                                 },
                                 child: Text('Submit'))
@@ -79,15 +95,14 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
     );
   }
 
-  Future<void> _submitVent(title, vent) async {
-    setState(() {
-      isSubmitting = true;
-    });
-    await VentRepository()
-        .addVent(title: title, vent: vent, tags: []);
+  Future<void> _submitVent() async {
+    isSubmitting = true;
+    setState(() {});
+    await VentRepository().addVent(title: title, vent: vent, tags: [
+      ...{...tags}
+    ] /*remove duplicates*/);
 
-    setState(() {
-      isSubmitting = false;
-    });
+    isSubmitting = false;
+    setState(() {});
   }
 }

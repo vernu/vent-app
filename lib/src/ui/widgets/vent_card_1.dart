@@ -119,10 +119,10 @@ class _VentCard1State extends State<VentCard1> {
                                                 });
                                                 await VentRepository()
                                                     .deleteVent(widget.vent);
-
-                                                setState(() {
-                                                  deleting = false;
-                                                });
+                                                if (mounted)
+                                                  setState(() {
+                                                    deleting = false;
+                                                  });
                                               }),
                                     ],
                                   )

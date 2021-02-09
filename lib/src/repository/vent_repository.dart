@@ -157,6 +157,18 @@ class VentRepository {
           'createdAt': FieldValue.serverTimestamp(),
           'updatedAt': FieldValue.serverTimestamp()
         });
+
+        tags.forEach((tag) async {
+          DocumentSnapshot tagSnapshot =
+              await _firebaseFirestore.collection('tags').doc(tag).get();
+          if (tagSnapshot.exists) {
+            transaction.update(
+                tagSnapshot.reference, {'ventCount': FieldValue.increment(1)});
+          } else {
+            transaction.set(tagSnapshot.reference, {'ventCount': 1});
+          }
+        });
+
         DocumentSnapshot userDocSnapshot = await _firebaseFirestore
             .collection('users')
             .doc(_firebaseAuth.currentUser.uid)
@@ -193,6 +205,20 @@ class VentRepository {
             await _firebaseFirestore.collection('vents').doc(vent.id).get();
         if (ventDocSnapshot.exists) {
           transaction.delete(ventDocSnapshot.reference);
+
+          vent.tags.forEach((tag) async {
+            DocumentSnapshot tagSnapshot =
+                await _firebaseFirestore.collection('tags').doc(tag).get();
+            if (tagSnapshot.exists) {
+              if (tagSnapshot.data()['ventCount'] > 1) {
+                transaction.update(tagSnapshot.reference,
+                    {'ventCount': FieldValue.increment(-1)});
+              } else {
+                transaction.delete(tagSnapshot.reference);
+              }
+            }
+          });
+
           DocumentSnapshot userDocSnapshot = await _firebaseFirestore
               .collection('users')
               .doc(vent.userId)

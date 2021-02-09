@@ -65,7 +65,7 @@ class _HomeState extends State<Home> {
               }()),
               actions: [
                 IconButton(
-                  icon: Icon(Icons.settings),
+                  icon: Icon(CupertinoIcons.gear),
                   onPressed: () {
                     Navigator.pushNamed(context, '/settings');
                   },

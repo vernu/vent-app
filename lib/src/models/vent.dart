@@ -16,7 +16,7 @@ class Vent extends Equatable {
     this.vent = map['vent'];
     this.viewCount = map['viewCount'] ?? 0;
     this.commentCount = map['commentCount'] ?? 0;
-    // this.tags = map['tags'] ?? [];
+    this.tags = map['tags'] != null ? List.from(map['tags']) : [];
     this.createdAt =
         map['createdAt'] != null ? map['createdAt'].toDate() : null;
   }
