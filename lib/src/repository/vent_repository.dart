@@ -8,12 +8,30 @@ class VentRepository {
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
-  Future<List<Vent>> getLatestVents({int limit = 50}) async {
+  Future<List<Vent>> getVents(
+      {String userId,
+      String categoryId,
+      List<String> tags = const [],
+      int limit = 50,
+      String orderByField = 'createdAt',
+      bool descending = true}) async {
+    CollectionReference ref = _firebaseFirestore.collection('vents');
+    Query query;
+    QuerySnapshot querySnapshot;
     List<Vent> vents = [];
+
     try {
-      QuerySnapshot querySnapshot = await _firebaseFirestore
-          .collection('vents')
-          .orderBy('createdAt', descending: true)
+      if (userId != null) {
+        query = ref.where('userId', isEqualTo: userId);
+      } else if (categoryId != null) {
+        query = ref.where('categoryId', isEqualTo: categoryId);
+      } else if (tags.length > 0) {
+        query = ref.where('tags', arrayContainsAny: tags);
+      } else {
+        query = ref;
+      }
+      querySnapshot = await query
+          .orderBy(orderByField, descending: descending)
           .limit(limit)
           .get();
 

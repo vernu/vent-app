@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class Vent extends Equatable {
   final String id;
-  String userId, title, vent;
+  String userId, categoryId, title, vent;
   int viewCount, commentCount;
   List<String> tags;
   DateTime createdAt;
@@ -11,6 +11,7 @@ class Vent extends Equatable {
   Vent.fromMap(this.id, Map<String, dynamic> map) {
     // this.id= docId;
     this.userId = map['userId'];
+    this.categoryId = map['categoryId'];
     this.title = map['title'];
     this.vent = map['vent'];
     this.viewCount = map['viewCount'] ?? 0;

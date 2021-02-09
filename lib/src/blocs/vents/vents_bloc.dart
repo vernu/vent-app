@@ -18,7 +18,7 @@ class VentsBloc extends Bloc<VentsEvent, VentsState> {
     if (event is VentsLoadRequested) {
       yield this.state.copyWith(status: Status.Loading);
       try {
-        List<Vent> vents = await VentRepository().getLatestVents();
+        List<Vent> vents = await VentRepository().getVents();
         yield VentsState(status: Status.Loaded, vents: vents);
       } catch (e) {
         yield this
