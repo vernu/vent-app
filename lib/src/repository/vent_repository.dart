@@ -11,24 +11,24 @@ class VentRepository {
   Future<List<Vent>> getVents(
       {String userId,
       String categoryId,
-      List<String> tags = const [],
+      List<String> tags,
       int limit = 50,
       String orderByField = 'createdAt',
       bool descending = true}) async {
     CollectionReference ref = _firebaseFirestore.collection('vents');
-    Query query;
+    Query query = ref;
     QuerySnapshot querySnapshot;
     List<Vent> vents = [];
 
     try {
       if (userId != null) {
         query = ref.where('userId', isEqualTo: userId);
-      } else if (categoryId != null) {
+      }
+      if (categoryId != null) {
         query = ref.where('categoryId', isEqualTo: categoryId);
-      } else if (tags.length > 0) {
+      }
+      if (tags != null && tags.length > 0) {
         query = ref.where('tags', arrayContainsAny: tags);
-      } else {
-        query = ref;
       }
       querySnapshot = await query
           .orderBy(orderByField, descending: descending)

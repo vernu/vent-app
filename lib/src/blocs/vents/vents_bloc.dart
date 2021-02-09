@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:vent/src/blocs/vent_detail/vent_detail_bloc.dart';
 import 'package:vent/src/models/vent.dart';
 import 'package:vent/src/repository/vent_repository.dart';
 
@@ -18,7 +19,10 @@ class VentsBloc extends Bloc<VentsEvent, VentsState> {
     if (event is VentsLoadRequested) {
       yield this.state.copyWith(status: Status.Loading);
       try {
-        List<Vent> vents = await VentRepository().getVents();
+        List<Vent> vents = await VentRepository().getVents(
+            userId: event.userId,
+            categoryId: event.categoryId,
+            tags: event.tags);
         yield VentsState(status: Status.Loaded, vents: vents);
       } catch (e) {
         yield this

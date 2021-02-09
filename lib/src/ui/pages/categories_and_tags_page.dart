@@ -30,7 +30,7 @@ class _CategoriesAndTagsPageState extends State<CategoriesAndTagsPage> {
               Icon(CupertinoIcons.tags),
               SizedBox(width: 10),
               Text(
-                'Tags',
+                'Popular Tags',
                 style: TextStyle(fontSize: 22),
               ),
             ],
@@ -46,7 +46,11 @@ class _CategoriesAndTagsPageState extends State<CategoriesAndTagsPage> {
                       child: ActionChip(
                         elevation: 2,
                         backgroundColor: Colors.white10,
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/vents', arguments: {
+                            'tags': ['tag_$i']
+                          });
+                        },
                         label: Padding(
                           padding: const EdgeInsets.all(2.0),
                           child: Text('#tag_$i'),
@@ -74,7 +78,10 @@ class _CategoriesAndTagsPageState extends State<CategoriesAndTagsPage> {
             .map((category) => Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, '/vents',
+                          arguments: {'category': category});
+                    },
                     child: Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
