@@ -79,6 +79,9 @@ class VentRepository {
   Future<bool> addVentComment(String ventId, {@required String comment}) async {
     try {
       await _firebaseFirestore.runTransaction((transaction) async {
+        DocumentSnapshot freshVentSnapshot = await transaction
+            .get(_firebaseFirestore.collection('/vents').doc(ventId));
+
         transaction.set(
             _firebaseFirestore.collection('/vents/$ventId/ventComments').doc(),
             {
@@ -90,7 +93,8 @@ class VentRepository {
               'replyCount': 0,
               'createdAt': FieldValue.serverTimestamp()
             });
-        transaction.update(_firebaseFirestore.collection('/vents').doc(ventId),
+
+        transaction.update(freshVentSnapshot.reference,
             {'commentCount': FieldValue.increment(1)});
       });
       return true;
@@ -109,15 +113,15 @@ class VentRepository {
             .collection('vents/${comment.ventId}/ventComments')
             .doc(comment.id)
             .get();
+
+        DocumentSnapshot freshUserSnapshot = await transaction
+            .get(_firebaseFirestore.collection('users').doc(comment.userId));
+
         if (ventCommentSnapshot.exists) {
           transaction.delete(ventCommentSnapshot.reference);
-          DocumentSnapshot userDocSnapshot = await _firebaseFirestore
-              .collection('users')
-              .doc(comment.userId)
-              .get();
 
-          if (userDocSnapshot.exists) {
-            transaction.update(userDocSnapshot.reference,
+          if (freshUserSnapshot.exists) {
+            transaction.update(freshUserSnapshot.reference,
                 {'numVents': FieldValue.increment(-1)});
           }
         } else {
@@ -149,7 +153,22 @@ class VentRepository {
       List<String> tags = const []}) async {
     try {
       _firebaseFirestore.runTransaction((transaction) async {
-        transaction.set(_firebaseFirestore.collection('vents').doc(), {
+        List<DocumentSnapshot> tagSnapshots = [];
+        tags.forEach((tag) async {
+          DocumentSnapshot freshTagSnapshot = await transaction
+              .get(_firebaseFirestore.collection('tags').doc(tag));
+
+          tagSnapshots.add(freshTagSnapshot);
+        });
+
+        DocumentSnapshot freshUserSnapshot = await transaction.get(
+            _firebaseFirestore
+                .collection('users')
+                .doc(_firebaseAuth.currentUser.uid));
+
+        DocumentSnapshot freshVentsSnapshot =
+            await transaction.get(_firebaseFirestore.collection('vents').doc());
+        transaction.set(freshVentsSnapshot.reference, {
           'userId': _firebaseAuth.currentUser.uid,
           'title': title,
           'vent': vent,
@@ -157,10 +176,7 @@ class VentRepository {
           'createdAt': FieldValue.serverTimestamp(),
           'updatedAt': FieldValue.serverTimestamp()
         });
-
-        tags.forEach((tag) async {
-          DocumentSnapshot tagSnapshot =
-              await _firebaseFirestore.collection('tags').doc(tag).get();
+        tagSnapshots.forEach((tagSnapshot) async {
           if (tagSnapshot.exists) {
             transaction.update(
                 tagSnapshot.reference, {'ventCount': FieldValue.increment(1)});
@@ -169,13 +185,9 @@ class VentRepository {
           }
         });
 
-        DocumentSnapshot userDocSnapshot = await _firebaseFirestore
-            .collection('users')
-            .doc(_firebaseAuth.currentUser.uid)
-            .get();
-        if (userDocSnapshot.exists) {
-          transaction.update(
-              userDocSnapshot.reference, {'numVents': FieldValue.increment(1)});
+        if (freshUserSnapshot.exists) {
+          transaction.update(freshUserSnapshot.reference,
+              {'numVents': FieldValue.increment(1)});
         }
       });
       return true;
@@ -197,18 +209,24 @@ class VentRepository {
   }
 
   Future<void> deleteVent(Vent vent) async {
-    // await _firebaseFirestore.collection('vents').doc(ventDocId).delete();
-
+    // await _firebaseFirestore.collection('vents').doc(vent.id).delete();
     try {
       await _firebaseFirestore.runTransaction((transaction) async {
-        DocumentSnapshot ventDocSnapshot =
-            await _firebaseFirestore.collection('vents').doc(vent.id).get();
+        List<DocumentSnapshot> tagSnapshots = [];
+        vent.tags.forEach((tag) async {
+          DocumentSnapshot freshTagSnapshot = await transaction
+              .get(_firebaseFirestore.collection('tags').doc(tag));
+
+          tagSnapshots.add(freshTagSnapshot);
+        });
+        DocumentSnapshot ventDocSnapshot = await transaction
+            .get(_firebaseFirestore.collection('vents').doc(vent.id));
+        DocumentSnapshot freshUserSnapshot = await transaction
+            .get(_firebaseFirestore.collection('users').doc(vent.userId));
         if (ventDocSnapshot.exists) {
           transaction.delete(ventDocSnapshot.reference);
 
-          vent.tags.forEach((tag) async {
-            DocumentSnapshot tagSnapshot =
-                await _firebaseFirestore.collection('tags').doc(tag).get();
+          tagSnapshots.forEach((tagSnapshot) async {
             if (tagSnapshot.exists) {
               if (tagSnapshot.data()['ventCount'] > 1) {
                 transaction.update(tagSnapshot.reference,
@@ -219,17 +237,12 @@ class VentRepository {
             }
           });
 
-          DocumentSnapshot userDocSnapshot = await _firebaseFirestore
-              .collection('users')
-              .doc(vent.userId)
-              .get();
-
-          if (userDocSnapshot.exists) {
-            transaction.update(userDocSnapshot.reference,
+          if (freshUserSnapshot.exists) {
+            transaction.update(freshUserSnapshot.reference,
                 {'numVents': FieldValue.increment(-1)});
           }
         } else {
-          print('document snanpshot doesnt exist');
+          print('document snapshot doesnt exist');
         }
       });
     } catch (e) {
