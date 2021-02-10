@@ -10,7 +10,8 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with AutomaticKeepAliveClientMixin {
   RefreshController _refreshController = RefreshController(
     initialRefresh: true,
   );
@@ -32,6 +33,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(context) {
+    super.build(context);
+
     return MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => ventsBloc),
@@ -132,7 +135,8 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ));
-
-    //
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

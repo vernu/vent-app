@@ -9,9 +9,11 @@ class CategoriesAndTagsPage extends StatefulWidget {
   _CategoriesAndTagsPageState createState() => _CategoriesAndTagsPageState();
 }
 
-class _CategoriesAndTagsPageState extends State<CategoriesAndTagsPage> {
+class _CategoriesAndTagsPageState extends State<CategoriesAndTagsPage>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(context) {
+    super.build(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListView(
@@ -109,4 +111,7 @@ class _CategoriesAndTagsPageState extends State<CategoriesAndTagsPage> {
                 ))
             .toList());
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

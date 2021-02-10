@@ -8,7 +8,7 @@ class MyAccountPage extends StatefulWidget {
   _MyAccountPage createState() => _MyAccountPage();
 }
 
-class _MyAccountPage extends State<MyAccountPage> {
+class _MyAccountPage extends State<MyAccountPage> with AutomaticKeepAliveClientMixin {
   FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
@@ -17,6 +17,7 @@ class _MyAccountPage extends State<MyAccountPage> {
   }
 
   Widget build(context) {
+    super.build(context);
     return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
       if (state is AuthenticationSuccess)
         return ListView(
@@ -87,4 +88,7 @@ class _MyAccountPage extends State<MyAccountPage> {
         );
     });
   }
+
+  @override
+  bool get wantKeepAlive => false;
 }
