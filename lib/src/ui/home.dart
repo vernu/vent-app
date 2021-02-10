@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vent/src/blocs/categories_and_tags/categories_and_tags_bloc.dart';
 import 'package:vent/src/blocs/home_nav/home_nav_cubit.dart';
+import 'package:vent/src/blocs/vents/vents_bloc.dart';
 import 'package:vent/src/ui/pages/account_page.dart';
 import 'package:vent/src/ui/pages/categories_and_tags_page.dart';
 import 'package:vent/src/ui/pages/home_page.dart';
@@ -24,8 +26,14 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => HomeNavCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => HomeNavCubit()),
+        BlocProvider(create: (_) => VentsBloc()..add(VentsLoadRequested())),
+        BlocProvider(
+            create: (_) =>
+                CategoriesAndTagsBloc()..add(CategoriesAndTagsLoadRequested())),
+      ],
       child: BlocBuilder<HomeNavCubit, HomeNavState>(
         builder: (context, state) {
           print(state.selectedIndex);
