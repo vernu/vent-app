@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:vent/src/models/app_user.dart';
 import 'package:vent/src/models/comment.dart';
 import 'package:vent/src/models/vent.dart';
+import 'package:vent/src/repository/user_repository.dart';
 
 class VentRepository {
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -35,8 +37,11 @@ class VentRepository {
           .limit(limit)
           .get();
 
-      vents =
-          querySnapshot.docs.map((v) => Vent.fromMap(v.id, v.data())).toList();
+      for (QueryDocumentSnapshot q in querySnapshot.docs) {
+        AppUser user =
+            await UserRepository().getASingleUser(id: q.data()['userId']);
+        vents.add(Vent.fromMap(q.id, q.data(), user: user));
+      }
     } catch (e) {
       print(e.toString());
       throw Exception(e);
@@ -66,9 +71,14 @@ class VentRepository {
           .limit(limit)
           .get();
 
-      comments = querySnapshot.docs
-          .map((v) => Comment.fromMap(v.id, v.data()))
-          .toList();
+      // comments = querySnapshot.docs
+      //     .map((v) => Comment.fromMap(v.id, v.data()))
+      //     .toList();
+      for (QueryDocumentSnapshot q in querySnapshot.docs) {
+        AppUser user =
+            await UserRepository().getASingleUser(id: q.data()['userId']);
+        comments.add(Comment.fromMap(q.id, q.data(), user: user));
+      }
     } catch (e) {
       print(e.toString());
       throw Exception(e);
