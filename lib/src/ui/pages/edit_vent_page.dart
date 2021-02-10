@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:vent/src/models/vent.dart';
 import 'package:vent/src/repository/vent_repository.dart';
+import 'package:vent/src/utils/helpers.dart';
 
 class EditVentPage extends StatefulWidget {
   _EditVentPageState createState() => _EditVentPageState();
@@ -77,13 +78,17 @@ class _EditVentPageState extends State<EditVentPage> {
                             labelText: 'tags',
                             hintText: 'tags (separate by space)'),
                         validator: (val) {
-                          // check for special characters
-                          // if (val.contains(RegExp(r'[]')) ) {
-                          //   return 'invalid characters';
-                          // }
-                          tags = val.trim().split(' ');
+                          String error;
+                          tags = val.replaceAll('#', '').trim().split(' ');
+
+                          tags.forEach((t) {
+                            if (!isTagValidString(t)) {
+                              error = 'invalid characters';
+                            } else {}
+                          });
+
                           setState(() {});
-                          return null;
+                          return error;
                         },
                       ),
                       Row(children: [
