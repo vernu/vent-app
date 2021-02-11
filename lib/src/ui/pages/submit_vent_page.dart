@@ -1,8 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_select/smart_select.dart';
+import 'package:vent/src/models/vent_category.dart';
+import 'package:vent/src/repository/category_repository.dart';
 import 'package:vent/src/repository/vent_repository.dart';
 import 'package:vent/src/utils/helpers.dart';
 
 class SubmitVentPage extends StatefulWidget {
+  SubmitVentPage({Key key}) : super(key: key);
   _SubmitVentPageState createState() => _SubmitVentPageState();
 }
 
@@ -12,6 +17,7 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
 
   String title, vent;
   List<String> tags = [];
+  VentCategory selectedCategory;
 
   @override
   Widget build(context) {
@@ -58,6 +64,39 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
                           return null;
                         },
                       ),
+                      Container(
+                        padding: EdgeInsets.all(8),
+                        child: FutureBuilder<List<VentCategory>>(
+                            future: CategoryRepository().getCategories(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    CupertinoActivityIndicator(),
+                                    Text('Loading Categories...'),
+                                  ],
+                                );
+                              }
+                              return SmartSelect<VentCategory>.single(
+                                title: 'Categories',
+                                value: null,
+                                modalType: S2ModalType.popupDialog,
+                                choiceItems: S2Choice.listFrom(
+                                  source: snapshot.data,
+                                  value: (index, categ) => categ,
+                                  title: (index, categ) => categ.name,
+                                ),
+                                onChange: (state) => setState(
+                                    () => {selectedCategory = state.value}),
+                                modalStyle: S2ModalStyle(
+                                  backgroundColor:
+                                      Theme.of(context).backgroundColor,
+                                ),
+                              );
+                            }),
+                      ),
                       TextFormField(
                         minLines: 3,
                         maxLines: 3,
@@ -86,7 +125,14 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
                                 onPressed: () async {
                                   if (_submitVentFormKey.currentState
                                       .validate()) {
-                                    _submitVent();
+                                    if (selectedCategory == null) {
+                                      Scaffold.of(context)
+                                          .showSnackBar(SnackBar(
+                                        content: Text('Please select category'),
+                                      ));
+                                    } else {
+                                      _submitVent();
+                                    }
                                   }
                                 },
                                 child: Text('Submit'))
@@ -103,7 +149,8 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
   Future<void> _submitVent() async {
     isSubmitting = true;
     setState(() {});
-    await VentRepository().addVent(title: title, vent: vent, tags: [
+    await VentRepository()
+        .addVent(title: title, vent: vent, category: selectedCategory, tags: [
       ...{...tags}
     ] /*remove duplicates*/);
 

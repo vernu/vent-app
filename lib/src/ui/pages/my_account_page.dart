@@ -8,7 +8,8 @@ class MyAccountPage extends StatefulWidget {
   _MyAccountPage createState() => _MyAccountPage();
 }
 
-class _MyAccountPage extends State<MyAccountPage> with AutomaticKeepAliveClientMixin {
+class _MyAccountPage extends State<MyAccountPage>
+    with AutomaticKeepAliveClientMixin {
   FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override

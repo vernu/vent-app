@@ -37,6 +37,7 @@ dependencies:
   equatable: ^1.2.5
   time_formatter: ^1.0.0+5
   pull_to_refresh: ^1.6.3
+  smart_select: ^4.3.2
 
   firebase_core: ^0.7.0
   firebase_auth: ^0.20.0+1

@@ -5,7 +5,7 @@ enum Status { Initial, Loading, Loaded, LoadingFail }
 class CategoriesAndTagsState extends Equatable {
   final Status status;
   final String error;
-  final List<Category> categories;
+  final List<VentCategory> categories;
   final List<Tag> tags;
 
   CategoriesAndTagsState(

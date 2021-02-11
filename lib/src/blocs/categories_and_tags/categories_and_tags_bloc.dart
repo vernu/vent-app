@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:vent/src/models/category.dart';
+import 'package:vent/src/models/vent_category.dart';
 import 'package:vent/src/models/tag.dart';
 import 'package:vent/src/repository/category_repository.dart';
 import 'package:vent/src/repository/tag_repository.dart';
@@ -21,7 +21,7 @@ class CategoriesAndTagsBloc
     if (event is CategoriesAndTagsLoadRequested) {
       yield this.state.copyWith(status: Status.Loading);
       try {
-        List<Category> categories = await CategoryRepository().getCategories();
+        List<VentCategory> categories = await CategoryRepository().getCategories();
         List<Tag> tags = await TagRepository().getTags();
 
         yield CategoriesAndTagsState(

@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:vent/src/models/app_user.dart';
+import 'package:vent/src/models/vent_category.dart';
 import 'package:vent/src/models/comment.dart';
 import 'package:vent/src/models/vent.dart';
+import 'package:vent/src/repository/category_repository.dart';
 import 'package:vent/src/repository/user_repository.dart';
 
 class VentRepository {
@@ -40,7 +42,9 @@ class VentRepository {
       for (QueryDocumentSnapshot q in querySnapshot.docs) {
         AppUser user =
             await UserRepository().getASingleUser(id: q.data()['userId']);
-        vents.add(Vent.fromMap(q.id, q.data(), user: user));
+        VentCategory category = await CategoryRepository()
+            .getASingleCategory(id: q.data()['categoryId']);
+        vents.add(Vent.fromMap(q.id, q.data(), user: user, category: category));
       }
     } catch (e) {
       print(e.toString());
@@ -160,9 +164,10 @@ class VentRepository {
   Future<bool> addVent(
       {@required String title,
       @required String vent,
+      VentCategory category,
       List<String> tags = const []}) async {
     try {
-      _firebaseFirestore.runTransaction((transaction) async {
+      await _firebaseFirestore.runTransaction((transaction) async {
         List<DocumentSnapshot> tagSnapshots = [];
         tags.forEach((tag) async {
           DocumentSnapshot freshTagSnapshot = await transaction
@@ -182,6 +187,7 @@ class VentRepository {
           'userId': _firebaseAuth.currentUser.uid,
           'title': title,
           'vent': vent,
+          'categoryId': category != null ? category.id : null,
           'tags': tags,
           'createdAt': FieldValue.serverTimestamp(),
           'updatedAt': FieldValue.serverTimestamp()
@@ -209,10 +215,12 @@ class VentRepository {
   Future<void> updateVent(String docId,
       {@required String title,
       @required String vent,
+      VentCategory category,
       List<String> tags = const []}) async {
     await _firebaseFirestore.collection('vents').doc(docId).update({
       'title': title,
       'vent': vent,
+      'categoryId': category != null ? category.id : null,
       'tags': tags,
       'updatedAt': FieldValue.serverTimestamp(),
     });

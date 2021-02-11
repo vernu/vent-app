@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:vent/src/blocs/vents/vents_bloc.dart';
-import 'package:vent/src/models/category.dart';
+import 'package:vent/src/models/vent_category.dart';
 import 'package:vent/src/ui/widgets/vent_card_1.dart';
 
 class VentsPage extends StatefulWidget {
   final String userId;
-  Category category;
+  VentCategory category;
   final List<String> tags;
   VentsPage({this.userId, this.category, this.tags = const <String>[]});
 

@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 
-class Category extends Equatable {
+class VentCategory extends Equatable {
   String id, name, icon;
-  Category({this.id, this.name, this.icon});
-  Category.fromMap(this.id, Map<String, dynamic> map) {
+  VentCategory({this.id, this.name, this.icon});
+  VentCategory.fromMap(this.id, Map<String, dynamic> map) {
     // this.id= docId;
     this.name = map['name'];
     this.icon = map['icon'];

@@ -1,6 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_select/smart_select.dart';
 import 'package:vent/src/models/vent.dart';
+import 'package:vent/src/models/vent_category.dart';
+import 'package:vent/src/repository/category_repository.dart';
 import 'package:vent/src/repository/vent_repository.dart';
 import 'package:vent/src/utils/helpers.dart';
 
@@ -19,6 +23,7 @@ class _EditVentPageState extends State<EditVentPage> {
   GlobalKey<FormState> _submitVentFormKey = GlobalKey<FormState>();
   bool isUpdating = false;
   String title, vent;
+  VentCategory selectedCategory;
   List<String> tags;
 
   @override
@@ -69,6 +74,39 @@ class _EditVentPageState extends State<EditVentPage> {
                           return null;
                         },
                       ),
+                      Container(
+                        padding: EdgeInsets.all(8),
+                        child: FutureBuilder<List<VentCategory>>(
+                            future: CategoryRepository().getCategories(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    CupertinoActivityIndicator(),
+                                    Text('Loading Categories...'),
+                                  ],
+                                );
+                              }
+                              return SmartSelect<VentCategory>.single(
+                                title: 'Categories',
+                                value: widget.vent.category,
+                                modalType: S2ModalType.popupDialog,
+                                choiceItems: S2Choice.listFrom(
+                                  source: snapshot.data,
+                                  value: (index, categ) => categ,
+                                  title: (index, categ) => categ.name,
+                                ),
+                                onChange: (state) => setState(
+                                    () => {selectedCategory = state.value}),
+                                modalStyle: S2ModalStyle(
+                                  backgroundColor:
+                                      Theme.of(context).backgroundColor,
+                                ),
+                              );
+                            }),
+                      ),
                       TextFormField(
                         minLines: 3,
                         maxLines: 3,
@@ -98,7 +136,14 @@ class _EditVentPageState extends State<EditVentPage> {
                                 onPressed: () async {
                                   if (_submitVentFormKey.currentState
                                       .validate()) {
-                                    _updateVent();
+                                    if (selectedCategory == null) {
+                                      Scaffold.of(context)
+                                          .showSnackBar(SnackBar(
+                                        content: Text('Please select category'),
+                                      ));
+                                    } else {
+                                      _updateVent();
+                                    }
                                   }
                                 },
                                 child: Text('Update'))
@@ -116,10 +161,13 @@ class _EditVentPageState extends State<EditVentPage> {
     isUpdating = true;
     setState(() {});
 
-    await VentRepository()
-        .updateVent(widget.vent.id, title: title, vent: vent, tags: [
-      ...{...tags}
-    ] /*remove duplicates*/);
+    await VentRepository().updateVent(widget.vent.id,
+        title: title,
+        vent: vent,
+        category: selectedCategory,
+        tags: [
+          ...{...tags}
+        ] /*remove duplicates*/);
 
     isUpdating = false;
     setState(() {});
