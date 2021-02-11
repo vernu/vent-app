@@ -90,7 +90,7 @@ class _EditVentPageState extends State<EditVentPage> {
                                 );
                               }
                               return SmartSelect<VentCategory>.single(
-                                title: 'Categories',
+                                title: 'Select category : ',
                                 value: widget.vent.category,
                                 modalType: S2ModalType.popupDialog,
                                 choiceItems: S2Choice.listFrom(

@@ -80,7 +80,7 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
                                 );
                               }
                               return SmartSelect<VentCategory>.single(
-                                title: 'Categories',
+                                title: 'Select category : ',
                                 value: null,
                                 modalType: S2ModalType.popupDialog,
                                 choiceItems: S2Choice.listFrom(
