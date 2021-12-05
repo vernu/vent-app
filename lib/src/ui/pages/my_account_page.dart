@@ -85,9 +85,17 @@ class _MyAccountPage extends State<MyAccountPage>
                     },
                     child: Text('Verify email'),
                   ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/vents',
+                    arguments: {'userId': _auth.currentUser.uid});
+              },
+              child: Text('My Vents'),
+            ),
           ],
         );
-    else return CircularProgressIndicator();
+      else
+        return CircularProgressIndicator();
     });
   }
 
