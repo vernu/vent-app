@@ -39,7 +39,7 @@ class _MyAccountPage extends State<MyAccountPage>
                           '${state.user.isAnonymous ? "Anonymous" : state.user.displayName}',
                           style: Theme.of(context).textTheme.headline5.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).accentColor)),
+                              color: Theme.of(context).colorScheme.secondary)),
                       state.user.isAnonymous
                           ? SizedBox()
                           : FlatButton(
@@ -47,7 +47,7 @@ class _MyAccountPage extends State<MyAccountPage>
                     ],
                   ),
                 ),
-                RaisedButton(
+                ElevatedButton(
                   onPressed: () {
                     context.read<AuthBloc>().add(SignOutRequested());
                   },
@@ -63,7 +63,7 @@ class _MyAccountPage extends State<MyAccountPage>
             Text(
                 'signed up: ${formatTime(_auth.currentUser.metadata.creationTime.millisecondsSinceEpoch)}'),
             _auth.currentUser.isAnonymous
-                ? RaisedButton(
+                ? ElevatedButton(
                     onPressed: () async {
                       await _auth.currentUser.delete();
                     },
@@ -79,7 +79,7 @@ class _MyAccountPage extends State<MyAccountPage>
             // ),
             _auth.currentUser.emailVerified
                 ? Container()
-                : RaisedButton(
+                : ElevatedButton(
                     onPressed: () async {
                       await _auth.currentUser.sendEmailVerification();
                     },
