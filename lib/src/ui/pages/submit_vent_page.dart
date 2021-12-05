@@ -160,5 +160,8 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
 
     isSubmitting = false;
     setState(() {});
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Vent Submitted!')));
+    Navigator.popAndPushNamed(context, '/');
   }
 }
