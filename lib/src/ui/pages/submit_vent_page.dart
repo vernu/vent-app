@@ -105,17 +105,20 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
                             labelText: 'tags',
                             hintText: 'tags (separate by space)'),
                         validator: (val) {
-                          String error;
-                          tags = val.replaceAll('#', '').trim().split(' ');
+                          if (val.isNotEmpty) {
+                            String error;
+                            tags = val.replaceAll('#', '').trim().split(' ');
+                            tags.forEach((t) {
+                              if (!isTagValidString(t)) {
+                                error = 'invalid characters';
+                              } else {}
+                            });
 
-                          tags.forEach((t) {
-                            if (!isTagValidString(t)) {
-                              error = 'invalid characters';
-                            } else {}
-                          });
-
-                          setState(() {});
-                          return error;
+                            setState(() {});
+                            return error;
+                          } else {
+                            return null;
+                          }
                         },
                       ),
                       Row(children: [
