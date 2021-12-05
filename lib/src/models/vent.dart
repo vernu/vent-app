@@ -4,7 +4,7 @@ import 'package:vent/src/models/vent_category.dart';
 
 class Vent extends Equatable {
   final String id;
-  String userId, categoryId, title, vent;
+  String userId, userName, categoryId, title, vent;
   AppUser user;
   VentCategory category;
   int viewCount, commentCount;
@@ -14,6 +14,7 @@ class Vent extends Equatable {
   Vent.fromMap(this.id, Map<String, dynamic> map, {user, category}) {
     // this.id= docId;
     this.userId = map['userId'];
+    this.userName = map['userName'];
     this.user = user ?? null;
     this.categoryId = map['categoryId'];
     this.category = category ?? null;
