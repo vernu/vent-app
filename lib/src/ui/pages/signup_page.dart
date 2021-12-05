@@ -24,6 +24,14 @@ class _SignupPageState extends State<SignupPage> {
         child: ListView(
           padding: const EdgeInsets.all(8.0),
           children: [
+            BlocListener<AuthBloc, AuthState>(
+              listener: (context, state) {
+                if (state is AuthenticationSuccess) {
+                  Navigator.popAndPushNamed(context, '/');
+                }
+              },
+              child: Container(),
+            ),
             SizedBox(
               height: 20,
             ),
@@ -76,8 +84,7 @@ class _SignupPageState extends State<SignupPage> {
                   validator: (val) {
                     if (val.isEmpty) {
                       return 'Please enter phone no.';
-                    }
-                    else if(val.length < 9 ){
+                    } else if (val.length < 9) {
                       return 'invalid format';
                     }
                     phoneNumber = val;
