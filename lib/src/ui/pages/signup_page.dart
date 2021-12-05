@@ -29,6 +29,10 @@ class _SignupPageState extends State<SignupPage> {
                 if (state is AuthenticationSuccess) {
                   Navigator.popAndPushNamed(context, '/');
                 }
+                if (state is Unauthenticated) {
+                  final snackBar = SnackBar(content: Text('Signup Failed!'));
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
               },
               child: Container(),
             ),
