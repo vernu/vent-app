@@ -121,7 +121,7 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
                       Row(children: [
                         isSubmitting
                             ? CircularProgressIndicator()
-                            : RaisedButton(
+                            : ElevatedButton(
                                 onPressed: () async {
                                   if (_submitVentFormKey.currentState
                                       .validate()) {
