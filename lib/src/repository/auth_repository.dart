@@ -125,6 +125,7 @@ class AuthRepository {
           email: email, password: password);
       userCredential.user.sendEmailVerification();
       await userCredential.user.updateDisplayName(name);
+      _storeUserData(name: name, phoneNumber: phoneNumber, email: email);
     } on FirebaseAuthException catch (e) {
       print(e.code);
       if (e.code == 'weak-password') {
@@ -132,7 +133,6 @@ class AuthRepository {
     } catch (e) {
       print(e);
     } finally {
-      _storeUserData(name: name, phoneNumber: phoneNumber, email: email);
     }
     return userCredential;
   }
