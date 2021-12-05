@@ -132,10 +132,10 @@ class _SigninPageState extends State<SiginPage> {
               context.read<AuthBloc>().add(SignInAnonymouslyRequested()),
           child: Text('Sign in with Anonymously'),
         ),
-        RaisedButton(
-          onPressed: () => {showPhoneSigninDialog()},
-          child: Text('Sign in with phone'),
-        ),
+        // RaisedButton(
+        //   onPressed: () => {showPhoneSigninDialog()},
+        //   child: Text('Sign in with phone'),
+        // ),
         RaisedButton(
           onPressed: () {
             context.read<AuthBloc>().add(SignInWithGoogleRequested());
