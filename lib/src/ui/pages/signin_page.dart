@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:vent/src/blocs/auth/auth_bloc.dart';
 
 class SiginPage extends StatefulWidget {
@@ -136,11 +137,13 @@ class _SigninPageState extends State<SiginPage> {
         //   onPressed: () => {showPhoneSigninDialog()},
         //   child: Text('Sign in with phone'),
         // ),
-        RaisedButton(
+        ElevatedButton.icon(
+          icon: Icon(FontAwesomeIcons.google),
           onPressed: () {
             context.read<AuthBloc>().add(SignInWithGoogleRequested());
           },
-          child: Text('Continue with Google'),
+          label: Text('Continue with Google'),
+          style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.red)),
         ),
         // RaisedButton(
         //   onPressed: () async {
