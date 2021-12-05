@@ -140,7 +140,7 @@ class _SigninPageState extends State<SiginPage> {
           onPressed: () {
             context.read<AuthBloc>().add(SignInWithGoogleRequested());
           },
-          child: Text('Sign in with Google'),
+          child: Text('Continue with Google'),
         ),
         // RaisedButton(
         //   onPressed: () async {
