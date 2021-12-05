@@ -39,13 +39,14 @@ class VentRepository {
           .limit(limit)
           .get();
 
-      for (QueryDocumentSnapshot q in querySnapshot.docs) {
-        AppUser user =
-            await UserRepository().getASingleUser(id: q.data()['userId']);
-        VentCategory category = await CategoryRepository()
-            .getASingleCategory(id: q.data()['categoryId']);
-        vents.add(Vent.fromMap(q.id, q.data(), user: user, category: category));
-      }
+      // for (QueryDocumentSnapshot q in querySnapshot.docs) {
+      //   AppUser user =
+      //       await UserRepository().getASingleUser(id: q.data()['userId']);
+      //   VentCategory category = await CategoryRepository()
+      //       .getASingleCategory(id: q.data()['categoryId']);
+      //   vents.add(Vent.fromMap(q.id, q.data(), user: user, category: category));
+      // }
+      vents = querySnapshot.docs.map((v) => Vent.fromMap(v.id, v.data(),)).toList();
     } catch (e) {
       print(e.toString());
       throw Exception(e);
@@ -189,6 +190,7 @@ class VentRepository {
           'title': title,
           'vent': vent,
           'categoryId': category != null ? category.id : null,
+          'categoryName': category != null ? category.name : null,
           'tags': tags,
           'createdAt': FieldValue.serverTimestamp(),
           'updatedAt': FieldValue.serverTimestamp()
