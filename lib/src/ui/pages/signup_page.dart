@@ -138,8 +138,7 @@ class _SignupPageState extends State<SignupPage> {
                         Row(
                           children: [
                             Expanded(
-                              child: RaisedButton(
-                                  elevation: 4,
+                              child: ElevatedButton(
                                   child: Text(
                                     'Register',
                                   ),
