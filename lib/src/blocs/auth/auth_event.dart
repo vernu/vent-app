@@ -30,9 +30,9 @@ class PhoneVerificationCodeSubmitted extends AuthEvent {
 }
 
 class SignUpWithPasswordRequested extends AuthEvent {
-  final String email, password, name;
+  final String email, phoneNumber, password, name;
   SignUpWithPasswordRequested(
-      {@required this.email, @required this.password, this.name});
+      {@required this.email, @required this.phoneNumber, @required this.password, this.name});
 }
 
 

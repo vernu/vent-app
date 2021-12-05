@@ -84,7 +84,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       yield SignUpInProgress();
 
       UserCredential userCredential = await AuthRepository()
-          .signUpWithEmailAndPassword(event.email, event.password,
+          .signUpWithEmailAndPassword(event.email, event.phoneNumber,  event.password,
               name: event.name);
 
       if (userCredential != null) {

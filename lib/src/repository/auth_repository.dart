@@ -117,7 +117,7 @@ class AuthRepository {
     }
   }
 
-  signUpWithEmailAndPassword(email, password, {@required String name}) async {
+  signUpWithEmailAndPassword(email, phoneNumber, password, {@required String name}) async {
     UserCredential userCredential;
     try {
       userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
@@ -131,7 +131,7 @@ class AuthRepository {
     } catch (e) {
       print(e);
     } finally {
-      _storeUserData(name: name, email: email);
+      _storeUserData(name: name, phoneNumber: phoneNumber,  email: email);
     }
     return userCredential;
   }

@@ -10,7 +10,7 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final GlobalKey<FormState> _signupFormKey = GlobalKey<FormState>();
-  String name, email, password;
+  String name, email, phoneNumber, password;
 
   @override
   void initState() {
@@ -61,6 +61,23 @@ class _SignupPageState extends State<SignupPage> {
                       return 'Please enter email';
                     }
                     email = val;
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(
+                      Icons.phone,
+                    ),
+                    labelText: "Phone no.",
+                    hintText: "",
+                  ),
+                  validator: (val) {
+                    if (val.isEmpty) {
+                      return 'Please enter phone no.';
+                    }
+                    phoneNumber = val;
                     return null;
                   },
                 ),
@@ -132,6 +149,7 @@ class _SignupPageState extends State<SignupPage> {
                                       context.read<AuthBloc>().add(
                                           SignUpWithPasswordRequested(
                                               email: email,
+                                              phoneNumber: phoneNumber,
                                               password: password,
                                               name: name));
                                     }
