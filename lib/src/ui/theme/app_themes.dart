@@ -18,7 +18,7 @@ enum AppTheme {
   BlueGreyLight,
   BlueGreyDark
 }
-AppTheme defaultAppTheme = AppTheme.GreenDark;
+AppTheme defaultAppTheme = AppTheme.DeepPurpleDark;
 
 ThemeData themeData(
     {@required Brightness brightness, @required MaterialColor primarySwatch}) {
