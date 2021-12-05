@@ -126,10 +126,11 @@ class _SubmitVentPageState extends State<SubmitVentPage> {
                                   if (_submitVentFormKey.currentState
                                       .validate()) {
                                     if (selectedCategory == null) {
-                                      Scaffold.of(context)
-                                          .showSnackBar(SnackBar(
-                                        content: Text('Please select category'),
-                                      ));
+                                      final snackBar = SnackBar(
+                                          content:
+                                              Text('Please select category!'));
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(snackBar);
                                     } else {
                                       _submitVent();
                                     }
