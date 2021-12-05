@@ -98,7 +98,7 @@ class AuthRepository {
       //wrong sms code
     }
     if (userCredential.additionalUserInfo.isNewUser) {
-      await userCredential.user.updateProfile(displayName: name);
+      await userCredential.user.updateDisplayName(name);
       //update name email phoneNumber,
       await _storeUserData(name: name, phoneNumber: phoneNumber);
     }
@@ -117,13 +117,14 @@ class AuthRepository {
     }
   }
 
-  signUpWithEmailAndPassword(email, phoneNumber, password, {@required String name}) async {
+  signUpWithEmailAndPassword(email, phoneNumber, password,
+      {@required String name}) async {
     UserCredential userCredential;
     try {
       userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
       userCredential.user.sendEmailVerification();
-      await userCredential.user.updateProfile(displayName: name);
+      await userCredential.user.updateDisplayName(name);
     } on FirebaseAuthException catch (e) {
       print(e.code);
       if (e.code == 'weak-password') {
@@ -131,7 +132,7 @@ class AuthRepository {
     } catch (e) {
       print(e);
     } finally {
-      _storeUserData(name: name, phoneNumber: phoneNumber,  email: email);
+      _storeUserData(name: name, phoneNumber: phoneNumber, email: email);
     }
     return userCredential;
   }
