@@ -67,15 +67,18 @@ class _SignupPageState extends State<SignupPage> {
                 TextFormField(
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
+                    prefixText: '+251',
                     prefixIcon: Icon(
                       Icons.phone,
                     ),
                     labelText: "Phone no.",
-                    hintText: "",
                   ),
                   validator: (val) {
                     if (val.isEmpty) {
                       return 'Please enter phone no.';
+                    }
+                    else if(val.length < 9 ){
+                      return 'invalid format';
                     }
                     phoneNumber = val;
                     return null;
@@ -148,7 +151,7 @@ class _SignupPageState extends State<SignupPage> {
                                       context.read<AuthBloc>().add(
                                           SignUpWithPasswordRequested(
                                               email: email,
-                                              phoneNumber: phoneNumber,
+                                              phoneNumber: '+251$phoneNumber',
                                               password: password,
                                               name: name));
                                     }
