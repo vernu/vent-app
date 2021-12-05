@@ -102,6 +102,7 @@ class VentRepository {
               'userId': _firebaseAuth.currentUser != null
                   ? _firebaseAuth.currentUser.uid
                   : null,
+              'userName': _firebaseAuth.currentUser.displayName,
               'comment': comment,
               'likeCount': 0,
               'replyCount': 0,

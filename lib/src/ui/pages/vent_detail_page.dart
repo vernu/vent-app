@@ -196,7 +196,8 @@ class _VentDetailPageState extends State<VentDetailPage> {
                                   children: [
                                     Expanded(
                                         child: Text(
-                                            '${widget.vent.user != null ? widget.vent.user.name : "Anonymous"}',
+                                          comments[index].userName ?? comments[index].userId,
+                                            // '${widget.vent.user != null ? widget.vent.user.name : "Anonymous"}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyText1

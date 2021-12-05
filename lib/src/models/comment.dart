@@ -3,7 +3,7 @@ import 'package:vent/src/models/app_user.dart';
 
 class Comment extends Equatable {
   final String id;
-  String userId, ventId, comment;
+  String userId, userName, ventId, comment;
   AppUser user;
   int likeCount, replyCount;
   DateTime createdAt;
@@ -11,6 +11,7 @@ class Comment extends Equatable {
   Comment.fromMap(this.id, Map<String, dynamic> map, {user}) {
     // this.id= docId;
     this.userId = map['userId'];
+    this.userName = map['userName'];
     this.user = user ?? null;
     this.ventId = map['ventId'];
     this.comment = map['comment'];
