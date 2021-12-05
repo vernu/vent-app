@@ -5,7 +5,6 @@ import 'package:vent/src/models/app_user.dart';
 import 'package:vent/src/models/vent_category.dart';
 import 'package:vent/src/models/comment.dart';
 import 'package:vent/src/models/vent.dart';
-import 'package:vent/src/repository/category_repository.dart';
 import 'package:vent/src/repository/user_repository.dart';
 
 class VentRepository {
@@ -81,7 +80,7 @@ class VentRepository {
       //     .toList();
       for (QueryDocumentSnapshot q in querySnapshot.docs) {
         AppUser user =
-            await UserRepository().getASingleUser(id: q.data()['userId']);
+            await UserRepository().getASingleUser(id: q.get('userId'));
         comments.add(Comment.fromMap(q.id, q.data(), user: user));
       }
     } catch (e) {
@@ -249,7 +248,7 @@ class VentRepository {
 
           tagSnapshots.forEach((tagSnapshot) async {
             if (tagSnapshot.exists) {
-              if (tagSnapshot.data()['ventCount'] > 1) {
+              if (tagSnapshot.get('ventCount') > 1) {
                 transaction.update(tagSnapshot.reference,
                     {'ventCount': FieldValue.increment(-1)});
               } else {
