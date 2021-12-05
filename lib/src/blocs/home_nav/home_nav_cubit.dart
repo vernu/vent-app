@@ -11,7 +11,7 @@ class HomeNavCubit extends Cubit<HomeNavState> {
     emit(HomeNavState(selectedIndex: index));
   }
 
-  void gotToSigninPageIfUnAuthenticated() {
+  void goToSigninTabIfUnAuthenticated() {
     FirebaseAuth _instance = FirebaseAuth.instance;
     int index = _instance.currentUser != null ? 0 : 2;
     emit(HomeNavState(selectedIndex: index));
