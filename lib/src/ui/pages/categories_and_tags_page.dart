@@ -24,7 +24,7 @@ class _CategoriesAndTagsPageState extends State<CategoriesAndTagsPage>
           _refreshController.refreshCompleted();
         } else if (state.status == Status.LoadingFail) {
           _refreshController.refreshFailed();
-          Scaffold.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('Loading failed  : ${state.error}'),
             action: SnackBarAction(
               onPressed: () {

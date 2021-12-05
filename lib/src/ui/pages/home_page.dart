@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage>
         _refreshController.refreshCompleted();
       } else if (state.status == Status.LoadingFail) {
         _refreshController.refreshFailed();
-        Scaffold.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Failed loading vents : ${state.error}'),
           action: SnackBarAction(
             onPressed: () {
