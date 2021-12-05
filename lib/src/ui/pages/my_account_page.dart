@@ -87,6 +87,7 @@ class _MyAccountPage extends State<MyAccountPage>
                   ),
           ],
         );
+    else return CircularProgressIndicator();
     });
   }
 
