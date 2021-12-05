@@ -49,7 +49,7 @@ class _VentCard1State extends State<VentCard1> {
                                 .bodyText1
                                 .copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).accentColor),
+                                    color: Theme.of(context).colorScheme.secondary),
                           ),
                         ),
                         Text(
@@ -67,7 +67,7 @@ class _VentCard1State extends State<VentCard1> {
                         overflow: TextOverflow.clip,
                         style: Theme.of(context).textTheme.bodyText1.copyWith(
                             color: Theme.of(context)
-                                .accentColor
+                                .colorScheme.secondary
                                 .withOpacity(0.9))),
                     SizedBox(height: 5),
                     Text(
