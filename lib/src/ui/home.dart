@@ -98,13 +98,11 @@ class _HomeState extends State<Home> {
               showSelectedLabels: false,
               showUnselectedLabels: false,
               items: [
+                BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.home), title: Text('Home')),
+                    icon: Icon(Icons.category), label: 'Categories and Tags'),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.category),
-                    title: Text('Categories and Tags')),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.person), title: Text('Account')),
+                    icon: Icon(Icons.person), label: 'Account'),
               ],
               currentIndex: state.selectedIndex,
               type: BottomNavigationBarType.fixed,
