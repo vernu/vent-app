@@ -24,6 +24,18 @@ class _SigninPageState extends State<SiginPage> {
     return ListView(
       padding: EdgeInsets.all(8),
       children: [
+        BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthenticationSuccess) {
+              Navigator.popAndPushNamed(context, '/');
+            } 
+            if (state is Unauthenticated) {
+              final snackBar = SnackBar(content: Text('Signin Failed!'));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
+          },
+          child: Container(),
+        ),
         SizedBox(
           height: 20,
         ),
@@ -134,7 +146,8 @@ class _SigninPageState extends State<SiginPage> {
             context.read<AuthBloc>().add(SignInWithGoogleRequested());
           },
           label: Text('Continue with Google'),
-          style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.red)),
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.red)),
         ),
         RaisedButton(
           onPressed: () =>
@@ -145,7 +158,7 @@ class _SigninPageState extends State<SiginPage> {
         //   onPressed: () => {showPhoneSigninDialog()},
         //   child: Text('Sign in with phone'),
         // ),
-        
+
         // RaisedButton(
         //   onPressed: () async {
         //     final AccessToken accessToken = await FacebookAuth.instance.login();
