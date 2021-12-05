@@ -185,6 +185,7 @@ class VentRepository {
             await transaction.get(_firebaseFirestore.collection('vents').doc());
         transaction.set(freshVentsSnapshot.reference, {
           'userId': _firebaseAuth.currentUser.uid,
+          'userName': _firebaseAuth.currentUser.displayName,
           'title': title,
           'vent': vent,
           'categoryId': category != null ? category.id : null,
