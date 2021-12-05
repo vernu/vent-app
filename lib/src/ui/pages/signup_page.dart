@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:vent/src/blocs/auth/auth_bloc.dart';
 
 class SignupPage extends StatefulWidget {
@@ -115,23 +116,47 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                       );
                     }
-                    return Row(
+                    return Column(
                       children: [
-                        Expanded(
-                          child: RaisedButton(
-                              elevation: 4,
-                              child: Text(
-                                'Register',
+                        Row(
+                          children: [
+                            Expanded(
+                              child: RaisedButton(
+                                  elevation: 4,
+                                  child: Text(
+                                    'Register',
+                                  ),
+                                  onPressed: () {
+                                    if (_signupFormKey.currentState
+                                        .validate()) {
+                                      context.read<AuthBloc>().add(
+                                          SignUpWithPasswordRequested(
+                                              email: email,
+                                              password: password,
+                                              name: name));
+                                    }
+                                  }),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                icon: Icon(FontAwesomeIcons.google),
+                                onPressed: () {
+                                  context
+                                      .read<AuthBloc>()
+                                      .add(SignInWithGoogleRequested());
+                                },
+                                label: Text('Continue with Google'),
+                                style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.red)),
                               ),
-                              onPressed: () {
-                                if (_signupFormKey.currentState.validate()) {
-                                  context.read<AuthBloc>().add(
-                                      SignUpWithPasswordRequested(
-                                          email: email,
-                                          password: password,
-                                          name: name));
-                                }
-                              }),
+                            ),
+                          ],
                         ),
                       ],
                     );
