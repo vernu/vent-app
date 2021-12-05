@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:time_formatter/time_formatter.dart';
 import 'package:vent/src/blocs/auth/auth_bloc.dart';
 
 class MyAccountPage extends StatefulWidget {
@@ -58,10 +59,9 @@ class _MyAccountPage extends State<MyAccountPage>
             Divider(),
             SizedBox(height: 10),
             Text('email: ${_auth.currentUser.email}'),
-            Text('phone: ${_auth.currentUser.phoneNumber}'),
+            Text('phone: ${_auth.currentUser.phoneNumber ?? ''}'),
             Text(
-                'createdAt: ${_auth.currentUser.metadata.creationTime.toIso8601String()}'),
-            Text('providerData: ${_auth.currentUser.providerData.toString()}'),
+                'signed up: ${formatTime(_auth.currentUser.metadata.creationTime.millisecondsSinceEpoch)}'),
             _auth.currentUser.isAnonymous
                 ? RaisedButton(
                     onPressed: () async {
@@ -70,13 +70,13 @@ class _MyAccountPage extends State<MyAccountPage>
                     child: Text('Delete Anonymous account'),
                   )
                 : Container(),
-            RaisedButton(
-              onPressed: () async {
-                await _auth.currentUser.updateEmail('test@test.com');
-                await _auth.currentUser.updateProfile(displayName: 'test acc');
-              },
-              child: Text('Update'),
-            ),
+            // RaisedButton(
+            //   onPressed: () async {
+            //     await _auth.currentUser.updateEmail('test@test.com');
+            //     await _auth.currentUser.updateProfile(displayName: 'test acc');
+            //   },
+            //   child: Text('Update'),
+            // ),
             _auth.currentUser.emailVerified
                 ? Container()
                 : RaisedButton(
