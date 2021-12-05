@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => HomeNavCubit()),
+        BlocProvider(create: (_) => HomeNavCubit()..gotToSigninPageIfUnAuthenticated()),
         BlocProvider(create: (_) => VentsBloc()..add(VentsLoadRequested())),
         BlocProvider(
             create: (_) =>
