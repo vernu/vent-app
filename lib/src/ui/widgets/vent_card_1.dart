@@ -43,7 +43,7 @@ class _VentCard1State extends State<VentCard1> {
                       children: [
                         Expanded(
                           child: Text(
-                            '${widget.vent.user != null ? widget.vent.user.name : "Anonymous"}',
+                            '${widget.vent.user != null ? widget.vent.user.name : widget.vent.userName}',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyText1
