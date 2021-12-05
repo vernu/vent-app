@@ -81,13 +81,13 @@ class _VentCard1State extends State<VentCard1> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.visibility,
-                          size: 15,
-                        ),
-                        SizedBox(width: 5),
-                        Text('${widget.vent.viewCount}'),
-                        SizedBox(width: 15),
+                        // Icon(
+                        //   Icons.visibility,
+                        //   size: 15,
+                        // ),
+                        // SizedBox(width: 5),
+                        // Text('${widget.vent.viewCount}'),
+                        // SizedBox(width: 15),
                         Icon(
                           Icons.comment,
                           size: 15,
