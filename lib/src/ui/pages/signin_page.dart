@@ -128,6 +128,14 @@ class _SigninPageState extends State<SiginPage> {
 
         Center(child: Text('OR')),
 
+        ElevatedButton.icon(
+          icon: Icon(FontAwesomeIcons.google),
+          onPressed: () {
+            context.read<AuthBloc>().add(SignInWithGoogleRequested());
+          },
+          label: Text('Continue with Google'),
+          style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.red)),
+        ),
         RaisedButton(
           onPressed: () =>
               context.read<AuthBloc>().add(SignInAnonymouslyRequested()),
@@ -137,14 +145,7 @@ class _SigninPageState extends State<SiginPage> {
         //   onPressed: () => {showPhoneSigninDialog()},
         //   child: Text('Sign in with phone'),
         // ),
-        ElevatedButton.icon(
-          icon: Icon(FontAwesomeIcons.google),
-          onPressed: () {
-            context.read<AuthBloc>().add(SignInWithGoogleRequested());
-          },
-          label: Text('Continue with Google'),
-          style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.red)),
-        ),
+        
         // RaisedButton(
         //   onPressed: () async {
         //     final AccessToken accessToken = await FacebookAuth.instance.login();
