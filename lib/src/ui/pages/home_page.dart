@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:vent/src/blocs/auth/auth_bloc.dart';
 import 'package:vent/src/blocs/vents/vents_bloc.dart';
@@ -76,18 +77,31 @@ class _HomePageState extends State<HomePage>
             BlocBuilder<AuthBloc, AuthState>(
               builder: (context, state) {
                 if (state is AuthenticationSuccess)
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('What\'s on your mind? ',
-                          style: Theme.of(context).textTheme.headline6),
-                      RaisedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/submit_vent');
-                        },
-                        child: Text('Vent here'),
+                  return Card(
+                    // shape: StadiumBorder(),
+                    elevation: 50,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('What\'s on your mind? ',
+                              style: Theme.of(context).textTheme.headline6),
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              shape: new RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(16),
+                              ),
+                            ),
+                            icon: Icon(CupertinoIcons.text_bubble),
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/submit_vent');
+                            },
+                            label: Text('Vent here'),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   );
                 else
                   return SizedBox();
