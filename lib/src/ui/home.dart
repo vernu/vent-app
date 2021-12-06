@@ -98,12 +98,16 @@ class _HomeState extends State<Home> {
               ),
             ),
             bottomNavigationBar: BottomNavigationBar(
-              showSelectedLabels: false,
-              showUnselectedLabels: false,
+              backgroundColor: Theme.of(context).primaryColor,
+              // selectedItemColor: Theme.of(context).colorScheme.secondary,
+              selectedItemColor: Theme.of(context).primaryColorLight,
+              unselectedItemColor: Theme.of(context).primaryColorLight,
+              showSelectedLabels: true,
+              showUnselectedLabels: true,
               items: [
                 BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.category), label: 'Categories and Tags'),
+                    icon: Icon(Icons.category), label: 'Discover'),
                 BottomNavigationBarItem(
                     icon: Icon(Icons.person), label: 'Account'),
               ],
