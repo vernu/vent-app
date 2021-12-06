@@ -117,24 +117,28 @@ class _SigninPageState extends State<SiginPage> {
             ),
           ]),
         ),
-        Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: RichText(
-            text: TextSpan(
-                text: "Don't have an account?  ",
-                children: [
-                  TextSpan(
-                      text: 'Register',
-                      style: TextStyle(
-                          fontSize: 18,
-                          decoration: TextDecoration.underline,
-                          fontWeight: FontWeight.bold),
-                      recognizer: new TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.pushNamed(context, '/sign_up');
-                        })
-                ],
-                style: Theme.of(context).textTheme.bodyText1),
+        Card(
+          elevation: 50,
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: RichText(
+              text: TextSpan(
+                  text: "Don't have an account?  ",
+                  children: [
+                    TextSpan(
+                        text: 'Register',
+                        style: TextStyle(
+                            fontSize: 24,
+                            color: Theme.of(context).primaryColor,
+                            decoration: TextDecoration.underline,
+                            fontWeight: FontWeight.bold),
+                        recognizer: new TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.pushNamed(context, '/sign_up');
+                          })
+                  ],
+                  style: Theme.of(context).textTheme.bodyText1.copyWith(fontSize: 18)),
+            ),
           ),
         ),
 
