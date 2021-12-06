@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:time_formatter/time_formatter.dart';
 import 'package:vent/src/blocs/auth/auth_bloc.dart';
 
@@ -91,6 +92,13 @@ class _MyAccountPage extends State<MyAccountPage>
                     arguments: {'userId': _auth.currentUser.uid});
               },
               child: Text('My Vents'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Share.share(
+                    'check out this cool vent app https://play.google.com/store/apps/details?id=com.vernu.vent');
+              },
+              child: Text('invite a friend'),
             ),
           ],
         );
