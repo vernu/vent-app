@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +29,11 @@ class _VentsPageState extends State<VentsPage> {
     ventsBloc = VentsBloc();
     if (widget.category != null) {
       appBarTitle = widget.category.name;
-    } else if (widget.tags.length > 0) {
+    } 
+    else if (widget.userId != null && widget.userId == FirebaseAuth.instance.currentUser.uid) {
+      appBarTitle = 'My Vents';
+    } 
+    else if (widget.tags != null && widget.tags.length > 0) {
       appBarTitle = "TAGS [${widget.tags.join(', ')}]";
     }
   }
