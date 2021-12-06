@@ -28,7 +28,7 @@ class _SigninPageState extends State<SiginPage> {
           listener: (context, state) {
             if (state is AuthenticationSuccess) {
               Navigator.popAndPushNamed(context, '/');
-            } 
+            }
             if (state is Unauthenticated) {
               final snackBar = SnackBar(content: Text('Signin Failed!'));
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -39,9 +39,18 @@ class _SigninPageState extends State<SiginPage> {
         SizedBox(
           height: 20,
         ),
-        Text(
-          'Sign in',
-          style: Theme.of(context).textTheme.headline4,
+        Image.asset(
+          'assets/welcome.png',
+          height: 100,
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Center(
+          child: Text(
+            'Sign in to continue',
+            // style: Theme.of(context).textTheme.headline4,
+          ),
         ),
         SizedBox(
           height: 10,
@@ -137,7 +146,10 @@ class _SigninPageState extends State<SiginPage> {
                             Navigator.pushNamed(context, '/sign_up');
                           })
                   ],
-                  style: Theme.of(context).textTheme.bodyText1.copyWith(fontSize: 18)),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1
+                      .copyWith(fontSize: 18)),
             ),
           ),
         ),
@@ -158,7 +170,7 @@ class _SigninPageState extends State<SiginPage> {
         //       context.read<AuthBloc>().add(SignInAnonymouslyRequested()),
         //   child: Text('Sign in with Anonymously'),
         // ),
-        
+
         // RaisedButton(
         //   onPressed: () => {showPhoneSigninDialog()},
         //   child: Text('Sign in with phone'),
