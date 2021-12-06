@@ -149,11 +149,12 @@ class _SigninPageState extends State<SiginPage> {
           style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(Colors.red)),
         ),
-        RaisedButton(
-          onPressed: () =>
-              context.read<AuthBloc>().add(SignInAnonymouslyRequested()),
-          child: Text('Sign in with Anonymously'),
-        ),
+        // RaisedButton(
+        //   onPressed: () =>
+        //       context.read<AuthBloc>().add(SignInAnonymouslyRequested()),
+        //   child: Text('Sign in with Anonymously'),
+        // ),
+        
         // RaisedButton(
         //   onPressed: () => {showPhoneSigninDialog()},
         //   child: Text('Sign in with phone'),
