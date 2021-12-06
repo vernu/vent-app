@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:vent/src/blocs/auth/auth_bloc.dart';
 
 class SiginPage extends StatefulWidget {
@@ -94,6 +95,33 @@ class _SigninPageState extends State<SiginPage> {
                 return null;
               },
             ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: RichText(
+                text: TextSpan(
+                    text: "By signing in, you agree to accept the app\'s ",
+                    children: [
+                      TextSpan(
+                          text: 'terms of use and user policy.',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).primaryColor,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: new TapGestureRecognizer()
+                            ..onTap = () async {
+                              if (!await launch(
+                                  'https://israelabebe.com/privacy-policy'))
+                                throw 'Could not launch';
+                            })
+                    ],
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1
+                        .copyWith(fontSize: 14)),
+              ),
+            ),
+            SizedBox(height: 10),
             Row(
               children: [
                 FlatButton(
