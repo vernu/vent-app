@@ -45,7 +45,8 @@ dependencies:
   firebase_analytics: ^8.3.4
   # flutter_facebook_auth: ^2.0.0+1
   cloud_firestore: ^3.1.1
-  # firebase_messaging: ^7.0.3
+  firebase_messaging: ^11.2.3
+  flutter_local_notifications: ^9.1.5
   url_launcher: ^6.0.17
   share_plus: ^3.0.4
 
