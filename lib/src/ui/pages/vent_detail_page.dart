@@ -46,7 +46,7 @@ class _VentDetailPageState extends State<VentDetailPage> {
                 Column(
                   children: [
                     Text(
-                      "Anonymous",
+                      this.widget.vent.userName,
                       style: Theme.of(context).textTheme.bodyText1.copyWith(
                           fontSize: 21,
                           fontWeight: FontWeight.bold,
