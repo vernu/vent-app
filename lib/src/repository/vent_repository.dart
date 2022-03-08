@@ -45,7 +45,12 @@ class VentRepository {
       //       .getASingleCategory(id: q.data()['categoryId']);
       //   vents.add(Vent.fromMap(q.id, q.data(), user: user, category: category));
       // }
-      vents = querySnapshot.docs.map((v) => Vent.fromMap(v.id, v.data(),)).toList();
+      vents = querySnapshot.docs
+          .map((v) => Vent.fromMap(
+                v.id,
+                v.data(),
+              ))
+          .toList();
     } catch (e) {
       print(e.toString());
       throw Exception(e);
@@ -269,5 +274,26 @@ class VentRepository {
     } catch (e) {
       print(e);
     } finally {}
+  }
+
+  reportVent({String ventId}) async {
+    _firebaseFirestore.collection('/reportedVents').add({
+      'ventId': ventId,
+      'userId': _firebaseAuth.currentUser != null
+          ? _firebaseAuth.currentUser.uid
+          : null,
+      'createdAt': FieldValue.serverTimestamp()
+    });
+  }
+
+  reportVentComment({String ventId, String commentId}) async {
+    _firebaseFirestore.collection('/reportedVentComments').add({
+      'ventId': ventId,
+      'commentId': commentId,
+      'userId': _firebaseAuth.currentUser != null
+          ? _firebaseAuth.currentUser.uid
+          : null,
+      'createdAt': FieldValue.serverTimestamp()
+    });
   }
 }
