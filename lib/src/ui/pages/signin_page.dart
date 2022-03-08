@@ -111,7 +111,7 @@ class _SigninPageState extends State<SiginPage> {
                           recognizer: new TapGestureRecognizer()
                             ..onTap = () async {
                               if (!await launch(
-                                  'https://israelabebe.com/privacy-policy'))
+                                  'https://vent.real.et/privacy-policy'))
                                 throw 'Could not launch';
                             })
                     ],
