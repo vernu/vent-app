@@ -181,8 +181,11 @@ class _SignupPageState extends State<SignupPage> {
                           children: [
                             Expanded(
                               child: ElevatedButton(
-                                  child: Text(
-                                    'Register',
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(
+                                      'Register',
+                                    ),
                                   ),
                                   onPressed: () {
                                     if (_signupFormKey.currentState
@@ -198,6 +201,9 @@ class _SignupPageState extends State<SignupPage> {
                             ),
                           ],
                         ),
+                        SizedBox(
+                          height: 5,
+                        ),
                         Row(
                           children: [
                             Expanded(
@@ -208,7 +214,10 @@ class _SignupPageState extends State<SignupPage> {
                                       .read<AuthBloc>()
                                       .add(SignInWithGoogleRequested());
                                 },
-                                label: Text('Continue with Google'),
+                                label: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Text('Continue with Google'),
+                                ),
                                 style: ButtonStyle(
                                     backgroundColor:
                                         MaterialStateProperty.all<Color>(

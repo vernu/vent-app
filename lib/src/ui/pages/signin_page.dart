@@ -189,7 +189,10 @@ class _SigninPageState extends State<SiginPage> {
           onPressed: () {
             context.read<AuthBloc>().add(SignInWithGoogleRequested());
           },
-          label: Text('Continue with Google'),
+          label: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text('Continue with Google'),
+          ),
           style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(Colors.red)),
         ),
