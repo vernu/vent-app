@@ -236,6 +236,7 @@ class _VentDetailPageState extends State<VentDetailPage> {
                                     TextButton(
                                       onPressed: () {
                                         VentRepository().reportVentComment(
+                                            ventId: widget.vent.id,
                                             commentId: comments[index].id);
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
