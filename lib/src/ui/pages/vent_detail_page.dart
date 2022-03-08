@@ -26,6 +26,35 @@ class _VentDetailPageState extends State<VentDetailPage> {
     VentRepository().addVentView(widget.vent.id);
   }
 
+  Future<void> _showConfirmDialog({Function onConfirm}) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text('Are you shure you want to report this content?'),
+                Text('Click Confirm to proceed'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: const Text('Confirm'),
+              onPressed: () {
+                onConfirm();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(contex) {
     return MultiBlocProvider(
@@ -46,7 +75,7 @@ class _VentDetailPageState extends State<VentDetailPage> {
                 Column(
                   children: [
                     Text(
-                      "Anonymous",
+                      this.widget.vent.userName,
                       style: Theme.of(context).textTheme.bodyText1.copyWith(
                           fontSize: 21,
                           fontWeight: FontWeight.bold,
@@ -74,6 +103,18 @@ class _VentDetailPageState extends State<VentDetailPage> {
                 "${widget.vent.vent}",
                 textAlign: TextAlign.justify,
                 style: Theme.of(context).textTheme.bodyText2,
+              ),
+              TextButton(
+                onPressed: () {
+                  _showConfirmDialog(onConfirm: () {
+                    VentRepository().reportVent(ventId: widget.vent.id);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Report Submitted')));
+                  });
+                },
+                child: Text(
+                  'Report',
+                ),
               ),
               Divider(),
               BlocBuilder<AuthBloc, AuthState>(
@@ -196,7 +237,8 @@ class _VentDetailPageState extends State<VentDetailPage> {
                                   children: [
                                     Expanded(
                                         child: Text(
-                                          comments[index].userName ?? comments[index].userId,
+                                            comments[index].userName ??
+                                                comments[index].userId,
                                             // '${widget.vent.user != null ? widget.vent.user.name : "Anonymous"}',
                                             style: Theme.of(context)
                                                 .textTheme
@@ -213,10 +255,32 @@ class _VentDetailPageState extends State<VentDetailPage> {
                                   ],
                                 ),
                                 SizedBox(height: 10),
-                                Text(
-                                  comments[index].comment,
-                                  maxLines: 10,
-                                  overflow: TextOverflow.fade,
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        comments[index].comment,
+                                        maxLines: 10,
+                                        overflow: TextOverflow.fade,
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        _showConfirmDialog(onConfirm: () {
+                                          VentRepository().reportVentComment(
+                                              ventId: widget.vent.id,
+                                              commentId: comments[index].id);
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      'Report Submitted')));
+                                        });
+                                      },
+                                      child: Text(
+                                        'Report',
+                                      ),
+                                    )
+                                  ],
                                 ),
                               ],
                             ),
