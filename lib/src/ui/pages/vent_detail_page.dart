@@ -42,6 +42,12 @@ class _VentDetailPageState extends State<VentDetailPage> {
             ),
           ),
           actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
             ElevatedButton(
               child: const Text('Confirm'),
               onPressed: () {
