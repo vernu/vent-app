@@ -196,7 +196,8 @@ class _VentDetailPageState extends State<VentDetailPage> {
                                   children: [
                                     Expanded(
                                         child: Text(
-                                          comments[index].userName ?? comments[index].userId,
+                                            comments[index].userName ??
+                                                comments[index].userId,
                                             // '${widget.vent.user != null ? widget.vent.user.name : "Anonymous"}',
                                             style: Theme.of(context)
                                                 .textTheme
@@ -213,10 +214,29 @@ class _VentDetailPageState extends State<VentDetailPage> {
                                   ],
                                 ),
                                 SizedBox(height: 10),
-                                Text(
-                                  comments[index].comment,
-                                  maxLines: 10,
-                                  overflow: TextOverflow.fade,
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        comments[index].comment,
+                                        maxLines: 10,
+                                        overflow: TextOverflow.fade,
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        VentRepository().reportVentComment(
+                                            commentId: comments[index].id);
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content:
+                                                    Text('Report Submitted')));
+                                      },
+                                      child: Text(
+                                        'Report',
+                                      ),
+                                    )
+                                  ],
                                 ),
                               ],
                             ),
