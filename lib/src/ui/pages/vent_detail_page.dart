@@ -75,6 +75,16 @@ class _VentDetailPageState extends State<VentDetailPage> {
                 textAlign: TextAlign.justify,
                 style: Theme.of(context).textTheme.bodyText2,
               ),
+              TextButton(
+                onPressed: () {
+                  VentRepository().reportVent(ventId: widget.vent.id);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Report Submitted')));
+                },
+                child: Text(
+                  'Report',
+                ),
+              ),
               Divider(),
               BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, state) {
