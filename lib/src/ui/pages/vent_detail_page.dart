@@ -36,7 +36,7 @@ class _VentDetailPageState extends State<VentDetailPage> {
           content: SingleChildScrollView(
             child: ListBody(
               children: const <Widget>[
-                Text('Are you shure you want to report this content?'),
+                Text('Are you sure you want to report this content?'),
                 Text('Click Confirm to proceed'),
               ],
             ),
